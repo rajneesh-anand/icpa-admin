@@ -18,6 +18,11 @@ const Routes = [
     name: "Home Banner",
     icon: Add,
   },
+  {
+    path: "/blog",
+    name: "Add News Update",
+    icon: Add,
+  },
 
   {
     path: "/course",
@@ -46,6 +51,11 @@ const Routes = [
     icon: FilterNone,
   },
 
+  {
+    path: "/blogs",
+    name: "News List",
+    icon: FilterNone,
+  },
   {
     path: "/courses",
     name: "Courses List",

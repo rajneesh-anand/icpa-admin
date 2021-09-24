@@ -318,7 +318,9 @@ function ServicePage({ categories }) {
                       <Select
                         native
                         onChange={onChange}
-                        defaultValue={categories[0].name}
+                        defaultValue={
+                          categories ? categories[0].name : "Add Category"
+                        }
                         label="Service Category"
                         inputProps={{
                           id: "category",
