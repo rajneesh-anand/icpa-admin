@@ -1,7 +1,7 @@
 import React, { useState, createRef } from "react";
 import { useRouter } from "next/router";
 import { makeStyles } from "@material-ui/core/styles";
-import Navbar from "components/Navbars/Navbar.js";
+// import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import styles from "assets/jss/layouts/adminStyle";
@@ -32,7 +32,7 @@ export default function LayoutPage({ children, ...rest }) {
     <div className={classes.wrapper}>
       <Sidebar
         routes={routes}
-        logoText={"SDA LEGAL"}
+        logoText={"ICPA"}
         logo={logo}
         image={image}
         handleDrawerToggle={handleDrawerToggle}
@@ -41,11 +41,11 @@ export default function LayoutPage({ children, ...rest }) {
         {...rest}
       />
       <div className={classes.mainPanel} ref={mainPanel}>
-        <Navbar
+        {/* <Navbar
           routes={routes}
           handleDrawerToggle={handleDrawerToggle}
           {...rest}
-        />
+        /> */}
 
         {getRoute() && (
           <div className={classes.content}>

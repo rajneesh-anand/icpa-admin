@@ -103,7 +103,8 @@ function CoursePage({ categories }) {
     formData.append("no_of_enrollment", data.enrollment);
     formData.append("duration", `${data.duration}`);
     formData.append("no_of_lectures", data.lectures);
-    formData.append("modules", data.modules);
+    formData.append("no_of_modules", data.no_of_modules);
+    formData.append("no_of_ratings", data.no_of_ratings);
 
     await fetch(`${process.env.API_URL}/course`, {
       method: "POST",
@@ -337,6 +338,39 @@ function CoursePage({ categories }) {
 
             <Grid item xs={6} sm={3} md={3}>
               <Controller
+                name="no_of_ratings"
+                control={control}
+                defaultValue="0"
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="NUMBER OF RATINGS"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^(?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])$/,
+                    message: "Accept only non-decimal numbers ",
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
                 name="enrollment"
                 control={control}
                 defaultValue="0"
@@ -396,7 +430,7 @@ function CoursePage({ categories }) {
 
             <Grid item xs={6} sm={3} md={3}>
               <Controller
-                name="modules"
+                name="no_of_modules"
                 control={control}
                 defaultValue="0"
                 render={({
@@ -464,7 +498,7 @@ function CoursePage({ categories }) {
               <div className={classes.select}>
                 <Controller
                   name="category"
-                  defaultValue="Rent Agreement"
+                  defaultValue={categories[0].name}
                   control={control}
                   render={({
                     field: { onChange, value },
@@ -480,7 +514,9 @@ function CoursePage({ categories }) {
                       </InputLabel>
                       <Select
                         native
-                        defaultValue="Rent Agreement"
+                        defaultValue={
+                          categories ? categories[0].name : "Add Category"
+                        }
                         onChange={onChange}
                         label="COURSE CATEGORY"
                         inputProps={{

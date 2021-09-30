@@ -19,31 +19,9 @@ const Routes = [
     icon: Add,
   },
   {
-    path: "/blog",
-    name: "Add News Update",
-    icon: Add,
-  },
-
-  {
-    path: "/course",
-    name: "Add New Course",
-    icon: Add,
-  },
-  {
-    path: "/chapter",
-    name: "Add Course Chapter",
-    icon: Add,
-  },
-  {
-    path: "/service",
-    name: " Add New Service",
-    icon: Add,
-  },
-
-  {
-    path: "/testinomial",
-    name: "Add Testinomial",
-    icon: Add,
+    path: "/blogs",
+    name: "Blogs & News",
+    icon: FilterNone,
   },
   {
     path: "/category",
@@ -52,26 +30,34 @@ const Routes = [
   },
 
   {
-    path: "/blogs",
-    name: "News List",
-    icon: FilterNone,
-  },
-  {
     path: "/courses",
-    name: "Courses List",
+    name: "Courses",
     icon: FilterNone,
   },
-
   {
-    path: "/testinomials",
-    name: "Testinomial List",
+    path: "/orders",
+    name: "Orders",
     icon: FilterNone,
   },
-
+  {
+    path: "/products",
+    name: "Products",
+    icon: FilterNone,
+  },
   {
     path: "/services",
-    name: "Services List",
+    name: "Services",
     icon: FilterNone,
+  },
+  {
+    path: "/testinomials",
+    name: "Testinomials",
+    icon: FilterNone,
+  },
+  {
+    path: "/chapter",
+    name: "Add Course Chapter",
+    icon: Add,
   },
 
   {

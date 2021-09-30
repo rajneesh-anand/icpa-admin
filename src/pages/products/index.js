@@ -11,7 +11,6 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Link from "next/link";
-import htmr from "htmr";
 import EditIcon from "@material-ui/icons/Edit";
 import Grid from "@material-ui/core/Grid";
 
@@ -27,16 +26,16 @@ const useStyles = makeStyles({
   },
 });
 
-function TestinomialListPage({ testinomials }) {
+function ProductListPage({ products }) {
   const classes = useStyles();
-  const data = testinomials ? JSON.parse(testinomials) : null;
+  const data = products ? JSON.parse(products) : null;
 
   return (
     <>
       <Seo
-        title="Testinomials List | ICPA Global Consultants "
-        description="ICPA Global Consultants - Testinomial"
-        canonical={`${process.env.PUBLIC_URL}/testinomials`}
+        title="Product List | ICPA Global Consultants "
+        description="ICPA Global Consultants - Product"
+        canonical={`${process.env.PUBLIC_URL}/products`}
       />
       <Grid container>
         <Grid
@@ -46,20 +45,20 @@ function TestinomialListPage({ testinomials }) {
           md={12}
           style={{ textAlign: "end", marginTop: 8 }}
         >
-          <Link href="/testinomial">
-            <a className="default-btn">Add New Testinomial</a>
+          <Link href="/product">
+            <a className="default-btn">Add New Product</a>
           </Link>
         </Grid>
         {data ? (
-          <Grid item>
+          <Grid item xs={12} sm={12} md={12}>
             <TableContainer>
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">No.</TableCell>
-                    <TableCell align="left">Client Name</TableCell>
-                    <TableCell align="left">Client Organization</TableCell>
-                    <TableCell align="left">Comment Description</TableCell>
+                    <TableCell align="left">Product Name</TableCell>
+                    <TableCell align="left">Product Description</TableCell>
+                    <TableCell align="left">Product Price</TableCell>
                     <TableCell align="center">Action</TableCell>
                   </TableRow>
                 </TableHead>
@@ -68,12 +67,10 @@ function TestinomialListPage({ testinomials }) {
                     <TableRow key={index}>
                       <TableCell align="left">{index + 1}</TableCell>
                       <TableCell align="left">{item.name}</TableCell>
-                      <TableCell align="left">{item.company}</TableCell>
-                      <TableCell align="left">
-                        {htmr(item.description)}
-                      </TableCell>
+                      <TableCell align="left">{item.description}</TableCell>
+                      <TableCell align="left">{item.price}</TableCell>
                       <TableCell align="center">
-                        <Link href={`/testinomial/edit/${item.id}`}>
+                        <Link href={`/product/edit/${item.id}`}>
                           <a>
                             <div>
                               <EditIcon />
@@ -90,7 +87,7 @@ function TestinomialListPage({ testinomials }) {
         ) : (
           <Grid item xs={12} sm={12} md={12}>
             <div className="content-center">
-              <p>Testinomial List is empty !</p>
+              <p>Product List is empty !</p>
             </div>
           </Grid>
         )}
@@ -98,9 +95,9 @@ function TestinomialListPage({ testinomials }) {
     </>
   );
 }
-TestinomialListPage.layout = Admin;
+ProductListPage.layout = Admin;
 
-export default TestinomialListPage;
+export default ProductListPage;
 
 export const getServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -113,7 +110,7 @@ export const getServerSideProps = async (context) => {
     };
   }
 
-  const data = await prisma.testinomials.findMany({
+  const data = await prisma.products.findMany({
     orderBy: [
       {
         id: "asc",
@@ -123,7 +120,7 @@ export const getServerSideProps = async (context) => {
 
   return {
     props: {
-      testinomials: data.length != 0 ? JSON.stringify(data) : null,
+      products: data.length != 0 ? JSON.stringify(data) : null,
     },
   };
 };

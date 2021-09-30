@@ -22,8 +22,8 @@ const useStyles = makeStyles({
   },
 });
 
-function DashboardPage({ usersData }) {
-  const users = JSON.parse(usersData);
+function OrdersPage({ orderData }) {
+  const orders = JSON.parse(orderData);
   const classes = useStyles();
 
   const fomatDate = (date_value) => {
@@ -34,40 +34,38 @@ function DashboardPage({ usersData }) {
   return (
     <React.Fragment>
       <Seo
-        title="Dashboard | ICPA Global Consultants "
+        title="Orders| ICPA Global Consultants "
         description="ICPA Global Consultants"
-        canonical={`${process.env.PUBLIC_URL}/dashboard`}
+        canonical={`${process.env.PUBLIC_URL}/orders`}
       />
 
-      {users.length > 0 ? (
+      {orders.length > 0 ? (
         <TableContainer>
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell align="left">No.</TableCell>
-                <TableCell align="left">User Image</TableCell>
-                <TableCell align="left">User Name</TableCell>
-                <TableCell align="left">User Email</TableCell>
-                <TableCell align="left">Account Date</TableCell>
+                <TableCell align="left">Order Number</TableCell>
+                <TableCell align="left">Order Date</TableCell>
+                <TableCell align="left">Customer</TableCell>
+                <TableCell align="left">Order Type</TableCell>
+                <TableCell align="left">Order Amount</TableCell>
+                <TableCell align="left">Payment Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user, index) => (
-                <TableRow key={user.id}>
+              {orders.map((item, index) => (
+                <TableRow key={item.id}>
                   <TableCell align="left">{index + 1}</TableCell>
+
+                  <TableCell align="left">{item.orderNumber}</TableCell>
                   <TableCell align="left">
-                    <img
-                      src={user.image ? user.image : "/img/profile.png"}
-                      alt={user.name}
-                      height={52}
-                      width={52}
-                    />
+                    {fomatDate(item.createdAt)}
                   </TableCell>
-                  <TableCell align="left">{user.name}</TableCell>
-                  <TableCell align="left">{user.email}</TableCell>
-                  <TableCell align="left">
-                    {fomatDate(user.createdAt)}
-                  </TableCell>
+                  <TableCell align="left">{item.email}</TableCell>
+                  <TableCell align="left">{item.orderType}</TableCell>
+                  <TableCell align="left">{item.amount}</TableCell>
+                  <TableCell align="left">{item.paymentStatus}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -84,9 +82,9 @@ function DashboardPage({ usersData }) {
   );
 }
 
-DashboardPage.layout = Admin;
+OrdersPage.layout = Admin;
 
-export default DashboardPage;
+export default OrdersPage;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
@@ -98,11 +96,12 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  const users = await prisma.user.findMany({});
+  const orders = await prisma.orders.findMany({});
 
   return {
     props: {
-      usersData: users.length != 0 ? JSON.stringify(users) : JSON.stringify([]),
+      orderData:
+        orders.length != 0 ? JSON.stringify(orders) : JSON.stringify([]),
     },
   };
 }

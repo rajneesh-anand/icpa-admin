@@ -4,8 +4,28 @@ import Admin from "@/layouts/Admin";
 import Link from "next/link";
 import Seo from "@/components/Seo";
 import Grid from "@material-ui/core/Grid";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650,
+    marginTop: 16,
+    borderTop: "1px solid #ddd",
+
+    "& .MuiTableCell-root": {
+      padding: 4,
+    },
+  },
+});
 
 function CourseListPage({ data }) {
+  const classes = useStyles();
   return (
     <div className="course-list-area">
       <Seo
@@ -14,6 +34,17 @@ function CourseListPage({ data }) {
         canonical={`${process.env.PUBLIC_URL}/courses`}
       />
       <Grid container>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          style={{ textAlign: "end", marginTop: 8 }}
+        >
+          <Link href="/course">
+            <a className="default-btn">Add New Course</a>
+          </Link>
+        </Grid>
         {data.length > 0 ? (
           <Grid item xs={12} sm={12} md={12}>
             <TableContainer>
@@ -21,9 +52,8 @@ function CourseListPage({ data }) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">No.</TableCell>
-                    <TableCell align="left">Service Image</TableCell>
-                    <TableCell align="left">Service Name</TableCell>
-                    <TableCell align="left">Description</TableCell>
+                    <TableCell align="left">Image</TableCell>
+                    <TableCell align="left">Course Name</TableCell>
                     <TableCell align="left">Status</TableCell>
                     <TableCell align="center">Action</TableCell>
                   </TableRow>
@@ -35,16 +65,17 @@ function CourseListPage({ data }) {
                       <TableCell align="left">
                         <img
                           src={item.images ? item.images : "/img/profile.png"}
-                          alt={item.serviceName}
+                          alt={item.courseName}
+                          height={64}
+                          width={64}
                         />
                       </TableCell>
-                      <TableCell align="left">{item.serviceName}</TableCell>
-                      <TableCell align="left">{item.description}</TableCell>
+                      <TableCell align="left">{item.courseName}</TableCell>
                       <TableCell align="left">
                         {item.status ? "Active" : "Inactive"}
                       </TableCell>
                       <TableCell align="center">
-                        <Link href={`/service/edit/${item.id}`}>
+                        <Link href={`/course/edit/${item.id}`}>
                           <a>Edit</a>
                         </Link>
                       </TableCell>
@@ -57,9 +88,6 @@ function CourseListPage({ data }) {
         ) : (
           <Grid item xs={12} sm={12} md={12}>
             <p>No Courses Available !</p>
-            <Link href="/course">
-              <a>Add New Course</a>
-            </Link>
           </Grid>
         )}
       </Grid>

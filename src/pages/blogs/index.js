@@ -15,8 +15,9 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
-    marginTop: 8,
-    paddingTop: 16,
+    marginTop: 16,
+    borderTop: "1px solid #ddd",
+
     "& .MuiTableCell-root": {
       padding: 4,
     },
@@ -24,7 +25,6 @@ const useStyles = makeStyles({
 });
 
 function BlogsListPage({ data }) {
-  console.log(data);
   const classes = useStyles();
   const fomatDate = (date_value) => {
     let date = new Date(date_value);
@@ -38,6 +38,17 @@ function BlogsListPage({ data }) {
         canonical={`${process.env.PUBLIC_URL}/blogs`}
       />
       <Grid container>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          style={{ textAlign: "end", marginTop: 8 }}
+        >
+          <Link href="/blog">
+            <a className="default-btn">Add New Blog</a>
+          </Link>
+        </Grid>
         {data.length > 0 ? (
           <Grid item xs={12} sm={12} md={12}>
             <TableContainer>
@@ -86,9 +97,6 @@ function BlogsListPage({ data }) {
         ) : (
           <Grid item xs={12} sm={12} md={12}>
             <p>No Blogs Available !</p>
-            <Link href="/blog">
-              <a>Add New Blog</a>
-            </Link>
           </Grid>
         )}
       </Grid>

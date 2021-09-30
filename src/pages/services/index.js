@@ -15,8 +15,9 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
-    marginTop: 8,
-    paddingTop: 16,
+    marginTop: 16,
+    borderTop: "1px solid #ddd",
+
     "& .MuiTableCell-root": {
       padding: 4,
     },
@@ -28,11 +29,22 @@ function ServiceListPage({ data }) {
   return (
     <div className="course-list-area">
       <Seo
-        title="Courses List | ICPA Global Consultants "
+        title="Services List | ICPA Global Consultants "
         description="ICPA Global Consultants -  Add New Category"
-        canonical={`${process.env.PUBLIC_URL}/courses`}
+        canonical={`${process.env.PUBLIC_URL}/services`}
       />
       <Grid container>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          style={{ textAlign: "end", marginTop: 8 }}
+        >
+          <Link href="/service">
+            <a className="default-btn">Add New Service</a>
+          </Link>
+        </Grid>
         {data.length > 0 ? (
           <Grid item xs={12} sm={12} md={12}>
             <TableContainer>
@@ -77,10 +89,7 @@ function ServiceListPage({ data }) {
           </Grid>
         ) : (
           <Grid item xs={12} sm={12} md={12}>
-            <p>No Courses Available !</p>
-            <Link href="/course">
-              <a>Add New Course</a>
-            </Link>
+            <p>No Service Available !</p>
           </Grid>
         )}
       </Grid>

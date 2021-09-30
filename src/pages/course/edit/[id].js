@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import slugify from "slugify";
 import { useForm, Controller } from "react-hook-form";
-import dynamic from "next/dynamic";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -9,61 +8,29 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
+import Grid from "@material-ui/core/Grid";
 import ToastMessage from "components/Snackbar/Snackbar.js";
 import DropzoneComponent from "components/Dropzone/Dropzone.js";
 import Admin from "layouts/Admin.js";
 import { useRouter } from "next/router";
-
-import {
-  serviceSubCategoryOptions,
-  serviceCategoryOptions,
-} from "constant/service";
-
-const Multiselect = dynamic(
-  () =>
-    import("multiselect-react-dropdown").then((module) => module.Multiselect),
-  {
-    ssr: false,
-  }
-);
+import Seo from "components/Seo";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiTextField-root": {
-      marginTop: theme.spacing(1),
-      paddingRight: 4,
-      width: "100%",
-    },
-    "& .MuiOutlinedInput-root": {
-      width: "100%",
-    },
-
-    "& .MuiButtonBase-root": {
-      margin: theme.spacing(2),
-    },
-
-    "& .multiSelectContainer": {
-      marginTop: 8,
-      paddingRight: 4,
+    flexGrow: 1,
+    "& .MuiFormControl-root": {
+      minWidth: "100%",
     },
     "& .MuiInputLabel-shrink": {
-      color: "#085050",
-      fontWeight: 500,
+      color: "#0e5810",
     },
   },
   input: {
     height: 40,
   },
-  formControl: {
-    marginTop: theme.spacing(1),
-    paddingRight: 4,
-    width: "100%",
-  },
 }));
 
-function ServiceEditPage({ categories }) {
+function CourseEditPage({ categories }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
@@ -71,7 +38,6 @@ function ServiceEditPage({ categories }) {
   const [selectedImage, setSelectedImage] = useState([]);
   const [usage, setUsage] = useState("");
   const [message, setMessage] = useState();
-  const [subCat, setSubCat] = useState([]);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
   const [editData, setEditData] = useState();
@@ -106,19 +72,11 @@ function ServiceEditPage({ categories }) {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-    const res = await fetch(`/api/service/${id}`);
+    const res = await fetch(`/api/course/${id}`);
     const result = await res.json();
     const data = result.data;
     setEditData(data);
   }, []);
-
-  const onCatSelect = (event) => {
-    setSubCat(event);
-  };
-
-  const onCatRemove = (event) => {
-    setSubCat(event);
-  };
 
   const onSubmit = async (data) => {
     setProcessingTo(true);
@@ -126,34 +84,33 @@ function ServiceEditPage({ categories }) {
     for (let i = 0; i < selectedImage.length; i += 1) {
       formData.append("images", selectedImage[i]);
     }
-    formData.append("service_name", data.service_name);
-    formData.append("description", data.service_desc);
-    formData.append("service_fee", data.service_fee);
-    formData.append("sale_fee", data.sale_price);
+    formData.append("couse_name", data.course_name);
+    formData.append("description", data.course_desc);
+    formData.append("details", usage);
+    formData.append("course_fee", data.course_fee);
+    formData.append("sale_fee", data.sale_fee);
     formData.append(
       "discount",
-      ((data.service_fee - data.sale_price) / data.service_fee) * 100
+      ((data.course_fee - data.sale_fee) / data.course_fee) * 100
     );
     formData.append("gst", data.gst);
-
     formData.append("category", data.category);
-    formData.append(
-      "sub_category",
-      subCat.length === 0
-        ? JSON.stringify(editData.subCategories)
-        : JSON.stringify(subCat)
-    );
     formData.append("status", data.status === "Active" ? true : false);
-    formData.append("usage", usage);
     formData.append(
       "slug",
-      slugify(data.service_name, {
+      slugify(data.course_name, {
         remove: /[*+~.()'"!:@,]/g,
         lower: true,
       })
     );
+    formData.append("ratings", data.ratings);
+    formData.append("no_of_enrollment", data.enrollment);
+    formData.append("duration", `${data.duration}`);
+    formData.append("no_of_lectures", data.lectures);
+    formData.append("no_of_modules", data.no_of_modules);
+    formData.append("no_of_ratings", data.no_of_ratings);
 
-    await fetch(`${process.env.API_URL}/service/${editData.id}`, {
+    await fetch(`${process.env.API_URL}/course/${editData.id}`, {
       method: "POST",
       body: formData,
     })
@@ -162,7 +119,7 @@ function ServiceEditPage({ categories }) {
           throw new Error("Bad response from server");
         } else {
           setProcessingTo(false);
-          setMessage("Service updated successfuly !");
+          setMessage("Course updated successfuly !");
           setSuccess(true);
           setOpen(true);
           setUsage("");
@@ -179,23 +136,29 @@ function ServiceEditPage({ categories }) {
       });
   };
 
-  return (
-    <>
-      {editData && (
-        <form className={classes.root}>
-          <GridContainer>
+  return editData ? (
+    <React.Fragment>
+      <Seo
+        title="Edit Course | ICPA Global Consultants "
+        description="ICPA Global Consultants -  Edit Course"
+        canonical={`${process.env.PUBLIC_URL}/course`}
+      />
+      <div className={classes.root}>
+        <form>
+          <Grid container spacing={1}>
             <DropzoneComponent onDrop={onDrop} files={selectedImage} />
-            <GridItem xs={12} sm={12} md={12}>
+
+            <Grid item xs={12} sm={12} md={12}>
               <Controller
-                name="service_name"
+                name="course_name"
                 control={control}
-                defaultValue={editData.serviceName}
+                defaultValue={editData.courseName}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Service Name"
+                    label="COURSE NAME"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -209,12 +172,13 @@ function ServiceEditPage({ categories }) {
                     helperText={error ? error.message : null}
                   />
                 )}
-                rules={{ required: " Service Name is required !" }}
+                rules={{ required: "Course Name is required !" }}
               />
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12}>
+            </Grid>
+
+            <Grid item xs={12} sm={12} md={12}>
               <Controller
-                name="service_desc"
+                name="course_desc"
                 control={control}
                 defaultValue={editData.description}
                 render={({
@@ -222,7 +186,7 @@ function ServiceEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Brief Description"
+                    label="COURSE BRIEF DESCRIPTION"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -236,21 +200,21 @@ function ServiceEditPage({ categories }) {
                     helperText={error ? error.message : null}
                   />
                 )}
-                rules={{ required: "Brief Introduction is required" }}
+                rules={{ required: "Brief Description is required !" }}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={3} md={3}>
               <Controller
-                name="service_fee"
+                name="course_fee"
                 control={control}
-                defaultValue={editData.serviceFee}
+                defaultValue={editData.courseFee}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Service Fee"
+                    label="COURSE FEE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -265,17 +229,17 @@ function ServiceEditPage({ categories }) {
                   />
                 )}
                 rules={{
-                  required: "Service Fee is required",
+                  required: "Course Fee is required !",
                   pattern: {
                     value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
                     message: "Accept only decimal numbers",
                   },
                 }}
               />
-            </GridItem>
-            <GridItem xs={6} sm={4} md={4}>
+            </Grid>
+            <Grid item xs={6} sm={3} md={3}>
               <Controller
-                name="sale_price"
+                name="sale_fee"
                 control={control}
                 defaultValue={editData.saleFee}
                 render={({
@@ -283,7 +247,7 @@ function ServiceEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Sale Fee"
+                    label="COURSE SALE FEE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -298,16 +262,16 @@ function ServiceEditPage({ categories }) {
                   />
                 )}
                 rules={{
-                  required: "Sale Fee is required",
+                  required: "Sale Fee is required !",
                   pattern: {
                     value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
                     message: "Accept only decimal numbers",
                   },
                 }}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={3} md={3}>
               <Controller
                 name="gst"
                 control={control}
@@ -321,10 +285,10 @@ function ServiceEditPage({ categories }) {
                     className={classes.formControl}
                     size="small"
                   >
-                    <InputLabel htmlFor="gst_rate">GST Rate</InputLabel>
+                    <InputLabel htmlFor="gst_rate">GST RATE</InputLabel>
                     <Select
                       native
-                      defaultValue={editData.gst}
+                      defaultValue="18"
                       onChange={onChange}
                       label="GST Rate"
                       inputProps={{
@@ -333,6 +297,7 @@ function ServiceEditPage({ categories }) {
                     >
                       <option value="3">3 %</option>
                       <option value="5">5 %</option>
+                      <option value="9">9 %</option>
                       <option value="12">12 %</option>
                       <option value="18">18 %</option>
                       <option value="28">28 %</option>
@@ -341,13 +306,204 @@ function ServiceEditPage({ categories }) {
                   </FormControl>
                 )}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
+                name="ratings"
+                control={control}
+                defaultValue={editData.ratings}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="COURSE RATINGS"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^([1-5])$/,
+                    message: "Accept numbers between 1-5 only ",
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
+                name="no_of_ratings"
+                control={control}
+                defaultValue={editData.numberOfRatings}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="NUMBER OF RATINGS"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^(?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])$/,
+                    message: "Accept only non-decimal numbers ",
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
+                name="enrollment"
+                control={control}
+                defaultValue={editData.numberOfEnrollments}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="TOTAL ENROLLMENT"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
+                    message: "Accept only decimal numbers",
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
+                name="duration"
+                control={control}
+                defaultValue={editData.duration}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="COURSE DURATION"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
+                name="no_of_modules"
+                control={control}
+                defaultValue={editData.numberOfModules}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="TOTAL MODULES"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^[1-9][0-9]?$/,
+                    message: "Accept numbers between 1-99 only ",
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={3}>
+              <Controller
+                name="lectures"
+                control={control}
+                defaultValue={editData.numberOfLectures}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="TOTAL CHAPTERS"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^[1-9][0-9]?$/,
+                    message: "Accept numbers between 1-99 only ",
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={3}>
               <div className={classes.select}>
                 <Controller
                   name="category"
-                  defaultValue={editData.category.name}
+                  defaultValue={categories[0].name}
                   control={control}
                   render={({
                     field: { onChange, value },
@@ -359,13 +515,15 @@ function ServiceEditPage({ categories }) {
                       size="small"
                     >
                       <InputLabel htmlFor="category">
-                        Service Category
+                        COURSE CATEGORY
                       </InputLabel>
                       <Select
                         native
-                        defaultValue={editData.category.name}
+                        defaultValue={
+                          categories ? categories[0].name : "Add Category"
+                        }
                         onChange={onChange}
-                        label="Service Category"
+                        label="COURSE CATEGORY"
                         inputProps={{
                           id: "category",
                         }}
@@ -377,28 +535,16 @@ function ServiceEditPage({ categories }) {
                             </option>
                           ))
                         ) : (
-                          <option value="Add Category">Add category</option>
+                          <option value="Add Category">Add Category</option>
                         )}
                       </Select>
                     </FormControl>
                   )}
                 />
               </div>
-            </GridItem>
-            <GridItem xs={6} sm={4} md={4}>
-              <Multiselect
-                options={serviceSubCategoryOptions}
-                selectedValues={editData.subCategories}
-                onSelect={onCatSelect}
-                onRemove={onCatRemove}
-                placeholder="+ Add Sub Category"
-                id="catOption"
-                isObject={false}
-                className="catDrowpdown"
-              />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={3} md={3}>
               <div className={classes.select}>
                 <Controller
                   name="status"
@@ -413,16 +559,16 @@ function ServiceEditPage({ categories }) {
                       className={classes.formControl}
                       size="small"
                     >
-                      <InputLabel htmlFor="service_status">
-                        Service Status
+                      <InputLabel htmlFor="course_status">
+                        COURSE STATUS
                       </InputLabel>
                       <Select
                         native
                         defaultValue={editData.status ? "Active" : "Inactive"}
                         onChange={onChange}
-                        label="Service Status"
+                        label="COURSE STATUS"
                         inputProps={{
-                          id: "service_status",
+                          id: "course_status",
                         }}
                       >
                         <option value="Active">Active</option>
@@ -432,13 +578,13 @@ function ServiceEditPage({ categories }) {
                   )}
                 />
               </div>
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={12} sm={12} md={12}>
+            <Grid item xs={12} sm={12} md={12}>
               {editorLoaded ? (
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editData.usage}
+                  data={editData.details}
                   onReady={(editor) => {
                     editor.editing.view.change((writer) => {
                       writer.setStyle(
@@ -456,9 +602,9 @@ function ServiceEditPage({ categories }) {
               ) : (
                 <p>editor..</p>
               )}
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
+            <Grid item xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
               <div>
                 <Button
                   type="button"
@@ -466,26 +612,26 @@ function ServiceEditPage({ categories }) {
                   color="primary"
                   onClick={handleSubmit(onSubmit)}
                 >
-                  {isProcessing ? "Updating..." : `Update`}
+                  {isProcessing ? "Updating..." : `UPDATE`}
                 </Button>
               </div>
-            </GridItem>
-          </GridContainer>
+            </Grid>
+          </Grid>
         </form>
-      )}
+      </div>
       <ToastMessage
         open={open}
         success={success}
         message={message}
         onClose={handleClose}
       />
-    </>
-  );
+    </React.Fragment>
+  ) : null;
 }
 
-ServiceEditPage.layout = Admin;
+CourseEditPage.layout = Admin;
 
-export default ServiceEditPage;
+export default CourseEditPage;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);

@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { getSession, useSession } from "next-auth/client";
+import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import slugify from "slugify";
 import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
+import { useRouter } from "next/router";
+import slugify from "slugify";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function BlogPage() {
+function ProductEditPage({ data }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
@@ -41,8 +39,11 @@ function BlogPage() {
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
+  const [editData, setEditData] = useState();
+  const router = useRouter();
   const classes = useStyles();
-  const [session, loading] = useSession();
+
+  const { id } = router.query;
 
   const {
     handleSubmit,
@@ -59,12 +60,16 @@ function BlogPage() {
     setOpen(false);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     editorRef.current = {
       CKEditor: require("@ckeditor/ckeditor5-react").CKEditor,
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
+    const res = await fetch(`/api/product/${id}`);
+    const result = await res.json();
+    const data = result.data;
+    setEditData(data);
   }, []);
 
   const onSubmit = async (data) => {
@@ -72,8 +77,11 @@ function BlogPage() {
     const formData = new FormData();
     formData.append("image", image);
     formData.append("name", data.name);
-    formData.append("category", data.category);
-    formData.append("content", content);
+    formData.append("description", data.description);
+    formData.append("details", content);
+    formData.append("price", data.price);
+    formData.append("sale_fee", data.sale_fee);
+    formData.append("ratings", data.ratings);
     formData.append(
       "slug",
       slugify(data.name, {
@@ -81,10 +89,8 @@ function BlogPage() {
         lower: true,
       })
     );
-    formData.append("status", data.status === "Active" ? true : false);
-    formData.append("author", session?.user?.email);
 
-    await fetch(`${process.env.API_URL}/blog`, {
+    await fetch(`${process.env.API_URL}/product/${editData.id}`, {
       method: "POST",
       body: formData,
     })
@@ -93,7 +99,7 @@ function BlogPage() {
           throw new Error("Bad response from server");
         } else {
           setProcessingTo(false);
-          setMessage("News Post saved successfuly !");
+          setMessage("Product updated successfuly !");
           setSuccess(true);
           setOpen(true);
           setContent("");
@@ -108,19 +114,19 @@ function BlogPage() {
       });
   };
 
-  return (
+  return editData ? (
     <React.Fragment>
       <Seo
-        title="Add Blog | ICPA Global Consultants "
+        title="Add Product | ICPA Global Consultants "
         description="ICPA Global Consultants"
-        canonical={`${process.env.PUBLIC_URL}/blog`}
+        canonical={`${process.env.PUBLIC_URL}/product`}
       />
       <div className={classes.root}>
         <form>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} md={12} style={{ margin: "8px 0px" }}>
               <label htmlFor="photo" className={classes.label}>
-                SELECT BLOG THUMBNAIL PHOTO
+                SELECT PRODUCT PHOTO
               </label>
               <input
                 type="file"
@@ -131,17 +137,17 @@ function BlogPage() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={12} md={12}>
+            <Grid item xs={12} sm={6} md={6}>
               <Controller
                 name="name"
                 control={control}
-                defaultValue=""
+                defaultValue={editData.name}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="BLOG TITLE"
+                    label="PRODUCT NAME"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -155,20 +161,20 @@ function BlogPage() {
                     helperText={error ? error.message : null}
                   />
                 )}
-                rules={{ required: "Blog Title is required !" }}
+                rules={{ required: "Product Name is required !" }}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
               <Controller
-                name="category"
+                name="description"
                 control={control}
-                defaultValue=""
+                defaultValue={editData.description}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="BLOG CATEGORY"
+                    label="PRODUCT DESCRIPTION"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -182,50 +188,112 @@ function BlogPage() {
                     helperText={error ? error.message : null}
                   />
                 )}
-                rules={{ required: "Category is required !" }}
+                rules={{ required: "Description is required !" }}
               />
             </Grid>
-            <Grid item xs={6} sm={6} md={6}>
-              <div className={classes.select}>
-                <Controller
-                  name="status"
-                  control={control}
-                  defaultValue="Active"
-                  render={({
-                    field: { onChange, value },
-                    fieldState: { error },
-                  }) => (
-                    <FormControl
-                      variant="outlined"
-                      className={classes.formControl}
-                      size="small"
-                    >
-                      <InputLabel htmlFor="service_status">
-                        BLOG STATUS
-                      </InputLabel>
-                      <Select
-                        native
-                        defaultValue="Active"
-                        onChange={onChange}
-                        label="BLOG STATUS"
-                        inputProps={{
-                          id: "service_status",
-                        }}
-                      >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                      </Select>
-                    </FormControl>
-                  )}
-                />
-              </div>
+
+            <Grid item xs={6} sm={4} md={4}>
+              <Controller
+                name="price"
+                control={control}
+                defaultValue={editData.price}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="PRODUCT PRICE"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
+                    message: "Accept only decimal numbers",
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={4} md={4}>
+              <Controller
+                name="sale_price"
+                control={control}
+                defaultValue={editData.sellingPrice}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="SALE PRICE"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
+                    message: "Accept only decimal numbers",
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={6} sm={4} md={4}>
+              <Controller
+                name="ratings"
+                control={control}
+                defaultValue={editData.ratings}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="PRODUCT RATINGS"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+                rules={{
+                  pattern: {
+                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
+                    message: "Accept only numbers ! ",
+                  },
+                }}
+              />
             </Grid>
 
             <Grid item xs={12} sm={12} md={12}>
               {editorLoaded ? (
                 <CKEditor
                   editor={ClassicEditor}
-                  data={content}
+                  data={editData.details}
                   onReady={(editor) => {
                     editor.editing.view.change((writer) => {
                       writer.setStyle(
@@ -252,7 +320,7 @@ function BlogPage() {
                   color="primary"
                   onClick={handleSubmit(onSubmit)}
                 >
-                  {isProcessing ? "Saving..." : `Save`}
+                  {isProcessing ? "Updating..." : `Update`}
                 </Button>
               </div>
             </Grid>
@@ -266,11 +334,11 @@ function BlogPage() {
         />
       </div>
     </React.Fragment>
-  );
+  ) : null;
 }
 
-BlogPage.layout = Admin;
-export default BlogPage;
+ProductEditPage.layout = Admin;
+export default ProductEditPage;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
