@@ -8,7 +8,18 @@ import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
-import slugify from "slugify";
+import { slugify } from "../../../libs/helper";
+import dynamic from "next/dynamic";
+
+import { productCategoryOptions } from "@/constant/product";
+
+const Multiselect = dynamic(
+  () =>
+    import("multiselect-react-dropdown").then((module) => module.Multiselect),
+  {
+    ssr: false,
+  }
+);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +44,7 @@ function ProductPage() {
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
+  const [category, setCategory] = useState([]);
   const [image, setImage] = useState();
   const [content, setContent] = useState();
   const [message, setMessage] = useState();
@@ -47,6 +59,16 @@ function ProductPage() {
   } = useForm({
     mode: "onBlur",
   });
+
+  const catSelectedValues = ["Home & Kitchen"];
+
+  const onCatSelect = (event) => {
+    setCategory(event);
+  };
+
+  const onCatRemove = (event) => {
+    setCategory(event);
+  };
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -73,13 +95,14 @@ function ProductPage() {
     formData.append("price", data.price);
     formData.append("sale_fee", data.sale_fee);
     formData.append("ratings", data.ratings);
+    formData.append("popularity", data.popularity);
     formData.append(
-      "slug",
-      slugify(data.name, {
-        remove: /[*+~.()'"!:@,]/g,
-        lower: true,
-      })
+      "category",
+      category.length === 0
+        ? JSON.stringify(catSelectedValues)
+        : JSON.stringify(category)
     );
+    formData.append("slug", slugify(data.name));
 
     await fetch(`${process.env.API_URL}/product`, {
       method: "POST",
@@ -277,6 +300,46 @@ function ProductPage() {
                     message: "Accept only numbers ! ",
                   },
                 }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={4} md={4}>
+              <Controller
+                name="popularity"
+                control={control}
+                defaultValue=""
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="POPULARITY"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={6}>
+              <Multiselect
+                options={productCategoryOptions}
+                selectedValues={catSelectedValues}
+                onSelect={onCatSelect}
+                onRemove={onCatRemove}
+                placeholder="+ Add Category"
+                id="catOption"
+                isObject={false}
+                className="catDrowpdown"
               />
             </Grid>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import slugify from "slugify";
+import { slugify } from "../../../libs/helper";
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -96,13 +96,7 @@ function CourseEditPage({ categories }) {
     formData.append("gst", data.gst);
     formData.append("category", data.category);
     formData.append("status", data.status === "Active" ? true : false);
-    formData.append(
-      "slug",
-      slugify(data.course_name, {
-        remove: /[*+~.()'"!:@,]/g,
-        lower: true,
-      })
-    );
+    formData.append("slug", slugify(data.course_name));
     formData.append("ratings", data.ratings);
     formData.append("no_of_enrollment", data.enrollment);
     formData.append("duration", `${data.duration}`);

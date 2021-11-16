@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import slugify from "slugify";
+import { slugify } from "../../../libs/helper";
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -74,13 +74,7 @@ function ChapterPage({ courses }) {
     formData.append("description", data.description);
     formData.append("course_name", data.category);
     formData.append("module", data.module);
-    formData.append(
-      "slug",
-      slugify(data.name, {
-        remove: /[*+~.()'"!:@,]/g,
-        lower: true,
-      })
-    );
+    formData.append("slug", slugify(data.name));
 
     await fetch(`${process.env.API_URL}/chapter`, {
       method: "POST",

@@ -11,6 +11,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
+import EditIcon from "@material-ui/icons/Edit";
 
 const useStyles = makeStyles({
   table: {
@@ -52,9 +53,10 @@ function ServiceListPage({ data }) {
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">No.</TableCell>
-                    <TableCell align="left">Service Image</TableCell>
+                    {/* <TableCell align="left">Service Image</TableCell> */}
                     <TableCell align="left">Service Name</TableCell>
                     <TableCell align="left">Description</TableCell>
+                    <TableCell align="left">Service Fee</TableCell>
                     <TableCell align="left">Status</TableCell>
                     <TableCell align="center">Action</TableCell>
                   </TableRow>
@@ -63,22 +65,27 @@ function ServiceListPage({ data }) {
                   {data.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell align="left">{index + 1}</TableCell>
-                      <TableCell align="left">
+                      {/* <TableCell align="left">
                         <img
                           src={item.images ? "/img/profile.png" : item.images}
                           alt={item.serviceName}
                           height={64}
                           width={64}
                         />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="left">{item.serviceName}</TableCell>
                       <TableCell align="left">{item.description}</TableCell>
+                      <TableCell align="left">{item.serviceFee}</TableCell>
                       <TableCell align="left">
                         {item.status ? "Active" : "Inactive"}
                       </TableCell>
                       <TableCell align="center">
                         <Link href={`/service/edit/${item.id}`}>
-                          <a>Edit</a>
+                          <a>
+                            <div>
+                              <EditIcon />
+                            </div>
+                          </a>
                         </Link>
                       </TableCell>
                     </TableRow>

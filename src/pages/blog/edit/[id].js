@@ -7,7 +7,7 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import slugify from "slugify";
+import { slugify } from "../../../libs/helper";
 import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
@@ -76,13 +76,7 @@ function BlogEditPage({ blogData }) {
     formData.append("name", data.name);
     formData.append("category", data.category);
     formData.append("content", content);
-    formData.append(
-      "slug",
-      slugify(data.name, {
-        remove: /[*+~.()'"!:@,]/g,
-        lower: true,
-      })
-    );
+    formData.append("slug", slugify(data.name));
     formData.append("status", data.status === "Active" ? true : false);
     formData.append("author", session?.user?.email);
 

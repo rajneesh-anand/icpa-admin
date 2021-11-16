@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import slugify from "slugify";
 import { useForm, Controller } from "react-hook-form";
-import dynamic from "next/dynamic";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -15,6 +13,7 @@ import ToastMessage from "components/Snackbar/Snackbar.js";
 import DropzoneComponent from "components/Dropzone/Dropzone.js";
 import Admin from "layouts/Admin.js";
 import { useRouter } from "next/router";
+import { slugify } from "../../../libs/helper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -118,13 +117,8 @@ function ServiceEditPage({ categories }) {
 
     formData.append("status", data.status === "Active" ? true : false);
     formData.append("usage", usage);
-    formData.append(
-      "slug",
-      slugify(data.service_name, {
-        remove: /[*+~.()'"!:@,]/g,
-        lower: true,
-      })
-    );
+    formData.append("popularity", data.popularity);
+    formData.append("slug", slugify(data.service_name));
 
     await fetch(`${process.env.API_URL}/service/${editData.id}`, {
       method: "POST",
@@ -357,6 +351,33 @@ function ServiceEditPage({ categories }) {
                   )}
                 />
               </div>
+            </GridItem>
+
+            <GridItem item xs={6} sm={4} md={4}>
+              <Controller
+                name="popularity"
+                control={control}
+                defaultValue={editData.popularity}
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="POPULARITY"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
+              />
             </GridItem>
 
             <GridItem xs={6} sm={4} md={4}>
