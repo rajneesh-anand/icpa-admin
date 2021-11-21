@@ -65,8 +65,8 @@ model Services {
   discount Decimal?
   gst Decimal? 
   usage String?
-  popularity String?
   status Boolean @default(true) 
+  popularity String?
   createdAt     DateTime  @default(now()) 
   categoryId  Int?
   category    Categories?   @relation(fields: [categoryId], references: [id]) 
@@ -102,6 +102,7 @@ model Courses {
 model Coursemedia {
   id        Int     @default(autoincrement()) @id
   title     String?
+  module     String?
   description     String?
   slug      String?
   video   String?
@@ -229,7 +230,19 @@ model VerificationRequest {
   expires    DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
   @@unique([identifier, token])
 
   
 }
+
+
+model Queries {
+  id        Int  @default(autoincrement()) @id
+  name      String?
+  email String? @unique
+  contact String?
+  location  String ?
+  interested String ?
+}
+

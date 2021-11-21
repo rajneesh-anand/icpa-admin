@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/router";
+import { slugify } from "@/libs/helper";
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,45 +9,24 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-import ToastMessage from "components/Snackbar/Snackbar.js";
-import DropzoneComponent from "components/Dropzone/Dropzone.js";
-import Admin from "layouts/Admin.js";
-import { useRouter } from "next/router";
-import { slugify } from "../../../libs/helper";
+import Grid from "@material-ui/core/Grid";
+import ToastMessage from "@/components/Snackbar/Snackbar";
+import DropzoneComponent from "@/components/Dropzone/Dropzone";
+import Seo from "@/components/Seo";
+import Admin from "@/layouts/Admin";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiTextField-root": {
-      marginTop: theme.spacing(1),
-      paddingRight: 4,
-      width: "100%",
-    },
-    "& .MuiOutlinedInput-root": {
-      width: "100%",
-    },
-
-    "& .MuiButtonBase-root": {
-      margin: theme.spacing(2),
-    },
-
-    "& .multiSelectContainer": {
-      marginTop: 8,
-      paddingRight: 4,
+    flexGrow: 1,
+    "& .MuiFormControl-root": {
+      minWidth: "100%",
     },
     "& .MuiInputLabel-shrink": {
-      color: "#085050",
-      fontWeight: 500,
+      color: "#0e5810",
     },
   },
   input: {
     height: 40,
-  },
-  formControl: {
-    marginTop: theme.spacing(1),
-    paddingRight: 4,
-    width: "100%",
   },
 }));
 
@@ -57,16 +38,20 @@ function ServiceEditPage({ categories }) {
   const [selectedImage, setSelectedImage] = useState([]);
   const [usage, setUsage] = useState("");
   const [message, setMessage] = useState();
+  const [editData, setEditData] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
-  const [editData, setEditData] = useState();
-  const router = useRouter();
   const classes = useStyles();
+  const router = useRouter();
+  const { id } = router.query;
 
-  const { handleSubmit, setValue, control } = useForm({
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = useForm({
     mode: "onBlur",
   });
-  const { id } = router.query;
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -107,17 +92,17 @@ function ServiceEditPage({ categories }) {
     formData.append("description", data.service_desc);
     formData.append("service_fee", data.service_fee);
     formData.append("sale_fee", data.sale_price);
+    formData.append("popularity", data.popularity);
     formData.append(
       "discount",
-      ((data.service_fee - data.sale_price) / data.service_fee) * 100
+      data.sale_price === "0"
+        ? 0
+        : ((data.service_fee - data.sale_price) / data.service_fee) * 100
     );
     formData.append("gst", data.gst);
-
     formData.append("category", data.category);
-
     formData.append("status", data.status === "Active" ? true : false);
     formData.append("usage", usage);
-    formData.append("popularity", data.popularity);
     formData.append("slug", slugify(data.service_name));
 
     await fetch(`${process.env.API_URL}/service/${editData.id}`, {
@@ -129,11 +114,10 @@ function ServiceEditPage({ categories }) {
           throw new Error("Bad response from server");
         } else {
           setProcessingTo(false);
-          setMessage("Service updated successfuly !");
+          setMessage("Service saved successfuly !");
           setSuccess(true);
           setOpen(true);
           setUsage("");
-          setSelectedImage([]);
         }
         return response;
       })
@@ -146,13 +130,19 @@ function ServiceEditPage({ categories }) {
       });
   };
 
-  return (
-    <>
-      {editData && (
-        <form className={classes.root}>
-          <GridContainer>
+  return editData ? (
+    <React.Fragment>
+      <Seo
+        title="Add New Service | ICPA Global Consultants "
+        description="ICPA Global Consultants"
+        canonical={`${process.env.PUBLIC_URL}/service`}
+      />
+      <div className={classes.root}>
+        <form>
+          <Grid container spacing={1}>
             <DropzoneComponent onDrop={onDrop} files={selectedImage} />
-            <GridItem xs={12} sm={12} md={12}>
+
+            <Grid item xs={12} sm={12} md={12}>
               <Controller
                 name="service_name"
                 control={control}
@@ -162,7 +152,7 @@ function ServiceEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Service Name"
+                    label="SERVICE NAME"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -178,8 +168,8 @@ function ServiceEditPage({ categories }) {
                 )}
                 rules={{ required: " Service Name is required !" }}
               />
-            </GridItem>
-            <GridItem xs={12} sm={12} md={12}>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12}>
               <Controller
                 name="service_desc"
                 control={control}
@@ -189,7 +179,7 @@ function ServiceEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Brief Description"
+                    label="BRIEF DESCRIPTION"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -205,9 +195,9 @@ function ServiceEditPage({ categories }) {
                 )}
                 rules={{ required: "Brief Introduction is required" }}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <Controller
                 name="service_fee"
                 control={control}
@@ -217,7 +207,7 @@ function ServiceEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Service Fee"
+                    label="SERVICE FEE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -239,8 +229,8 @@ function ServiceEditPage({ categories }) {
                   },
                 }}
               />
-            </GridItem>
-            <GridItem xs={6} sm={4} md={4}>
+            </Grid>
+            <Grid item xs={6} sm={4} md={4}>
               <Controller
                 name="sale_price"
                 control={control}
@@ -250,7 +240,7 @@ function ServiceEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="Sale Fee"
+                    label="SERVICE FEE AFTER DISCOUNT"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -272,9 +262,9 @@ function ServiceEditPage({ categories }) {
                   },
                 }}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <Controller
                 name="gst"
                 control={control}
@@ -288,7 +278,7 @@ function ServiceEditPage({ categories }) {
                     className={classes.formControl}
                     size="small"
                   >
-                    <InputLabel htmlFor="gst_rate">GST Rate</InputLabel>
+                    <InputLabel htmlFor="gst_rate">GST RATE</InputLabel>
                     <Select
                       native
                       defaultValue={editData.gst}
@@ -308,14 +298,14 @@ function ServiceEditPage({ categories }) {
                   </FormControl>
                 )}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <div className={classes.select}>
                 <Controller
                   name="category"
-                  defaultValue={editData.category.name}
                   control={control}
+                  defaultValue={editData.category.name}
                   render={({
                     field: { onChange, value },
                     fieldState: { error },
@@ -326,12 +316,12 @@ function ServiceEditPage({ categories }) {
                       size="small"
                     >
                       <InputLabel htmlFor="category">
-                        Service Category
+                        SERVICE CATEGORY
                       </InputLabel>
                       <Select
                         native
-                        defaultValue={editData.category.name}
                         onChange={onChange}
+                        defaultValue={editData.category.name}
                         label="Service Category"
                         inputProps={{
                           id: "category",
@@ -344,16 +334,16 @@ function ServiceEditPage({ categories }) {
                             </option>
                           ))
                         ) : (
-                          <option value="Add Category">Add category</option>
+                          <option value="Add Category">Add Category</option>
                         )}
                       </Select>
                     </FormControl>
                   )}
                 />
               </div>
-            </GridItem>
+            </Grid>
 
-            <GridItem item xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <Controller
                 name="popularity"
                 control={control}
@@ -378,9 +368,9 @@ function ServiceEditPage({ categories }) {
                   />
                 )}
               />
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={6} sm={4} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <div className={classes.select}>
                 <Controller
                   name="status"
@@ -396,7 +386,7 @@ function ServiceEditPage({ categories }) {
                       size="small"
                     >
                       <InputLabel htmlFor="service_status">
-                        Service Status
+                        SERVICE STATUS
                       </InputLabel>
                       <Select
                         native
@@ -414,9 +404,9 @@ function ServiceEditPage({ categories }) {
                   )}
                 />
               </div>
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={12} sm={12} md={12}>
+            <Grid xs={12} sm={12} md={12}>
               {editorLoaded ? (
                 <CKEditor
                   editor={ClassicEditor}
@@ -438,9 +428,9 @@ function ServiceEditPage({ categories }) {
               ) : (
                 <p>editor..</p>
               )}
-            </GridItem>
+            </Grid>
 
-            <GridItem xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
+            <Grid xs={12} sm={12} md={12} style={{ textAlign: "center" }}>
               <div>
                 <Button
                   type="button"
@@ -451,18 +441,18 @@ function ServiceEditPage({ categories }) {
                   {isProcessing ? "Updating..." : `Update`}
                 </Button>
               </div>
-            </GridItem>
-          </GridContainer>
+            </Grid>
+          </Grid>
         </form>
-      )}
+      </div>
       <ToastMessage
         open={open}
         success={success}
         message={message}
         onClose={handleClose}
       />
-    </>
-  );
+    </React.Fragment>
+  ) : null;
 }
 
 ServiceEditPage.layout = Admin;

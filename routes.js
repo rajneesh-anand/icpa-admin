@@ -35,6 +35,11 @@ const Routes = [
     icon: FilterNone,
   },
   {
+    path: "/chapters",
+    name: "Chapters",
+    icon: FilterNone,
+  },
+  {
     path: "/orders",
     name: "Orders",
     icon: FilterNone,
@@ -55,8 +60,8 @@ const Routes = [
     icon: FilterNone,
   },
   {
-    path: "/chapter",
-    name: "Add Course Chapter",
+    path: "/files",
+    name: "Add Files",
     icon: Add,
   },
 

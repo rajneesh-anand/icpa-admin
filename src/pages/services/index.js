@@ -76,7 +76,12 @@ function ServiceListPage({ data }) {
                       <TableCell align="left">{item.serviceName}</TableCell>
                       <TableCell align="left">{item.description}</TableCell>
                       <TableCell align="left">{item.serviceFee}</TableCell>
-                      <TableCell align="left">
+                      <TableCell
+                        align="left"
+                        style={{
+                          color: item.status ? "green" : "red",
+                        }}
+                      >
                         {item.status ? "Active" : "Inactive"}
                       </TableCell>
                       <TableCell align="center">

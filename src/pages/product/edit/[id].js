@@ -103,6 +103,10 @@ function ProductEditPage() {
     formData.append("details", content);
     formData.append("price", data.price);
     formData.append("sale_fee", data.sale_fee);
+    formData.append(
+      "discount",
+      ((data.price - data.sale_fee) / data.price) * 100
+    );
     formData.append("ratings", data.ratings);
     formData.append("popularity", data.popularity);
     formData.append(
@@ -225,7 +229,7 @@ function ProductEditPage() {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="PRODUCT PRICE"
+                    label="PRODUCT M.R.P"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -257,7 +261,7 @@ function ProductEditPage() {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="SALE PRICE"
+                    label="SELLING PRICE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -339,7 +343,7 @@ function ProductEditPage() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={6}>
+            <Grid item xs={12} sm={8} md={8}>
               <Multiselect
                 options={productCategoryOptions}
                 selectedValues={editData.category}

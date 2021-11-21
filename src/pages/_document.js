@@ -11,12 +11,6 @@ class MyDocument extends Document {
           <meta name="theme-color" content="#000000" />
           <link rel="shortcut icon" href="/fav.png" />
           <link
-            rel="apple-touch-icon"
-            sizes="76x76"
-            href={require("assets/img/apple-icon.png")}
-          />
-
-          <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
           />

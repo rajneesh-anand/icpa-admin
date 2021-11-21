@@ -80,7 +80,12 @@ function BlogsListPage({ data }) {
                         {fomatDate(item.createdAt)}
                       </TableCell>
 
-                      <TableCell align="left">
+                      <TableCell
+                        align="left"
+                        style={{
+                          color: item.published ? "green" : "red",
+                        }}
+                      >
                         {item.published ? "Active" : "Inactive"}
                       </TableCell>
                       <TableCell align="center">

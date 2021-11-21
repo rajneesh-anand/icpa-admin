@@ -25,22 +25,10 @@ const useStyles = makeStyles({
 function DashboardPage({ usersData }) {
   const users = JSON.parse(usersData);
   const classes = useStyles();
-  const [file, setFile] = useState();
 
   const fomatDate = (date_value) => {
     let date = new Date(date_value);
     return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-  };
-
-  const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append("uploadedFile", file);
-    const res = await fetch(`${process.env.API_URL}/upload`, {
-      method: "POST",
-      body: formData,
-    });
-    const result = await res.json();
-    console.log(result);
   };
 
   return (
@@ -93,10 +81,10 @@ function DashboardPage({ usersData }) {
         </div>
       )}
 
-      <form>
+      {/* <form>
         <input type="file" onChange={(e) => setFile(e.target.files[0])} />
         <button onClick={handleSubmit}>upload</button>
-      </form>
+      </form> */}
     </React.Fragment>
   );
 }
