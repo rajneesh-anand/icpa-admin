@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { slugify } from "@/libs/helper";
+import { useRouter } from "next/router";
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -20,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormControl-root": {
       minWidth: "100%",
     },
+    // "& .MuiInputLabel-shrink": {
+    //   color: "#0e5810",
+    // },
   },
   input: {
     height: 40,
@@ -32,14 +36,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ChapterPage({ courses }) {
+function ChapterEditPage({ courses }) {
   const [isProcessing, setProcessingTo] = useState(false);
+  const [editData, setEditData] = useState();
   const [chapterVideo, setChapterVideo] = useState();
   const [coverPhoto, setCoverPhoto] = useState();
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
   const classes = useStyles();
+  const router = useRouter();
+
+  const { id } = router.query;
 
   const {
     handleSubmit,
@@ -49,6 +57,13 @@ function ChapterPage({ courses }) {
     mode: "onBlur",
   });
 
+  useEffect(async () => {
+    const res = await fetch(`/api/chapter/${id}`);
+    const result = await res.json();
+    const data = result.data;
+    setEditData(data);
+  }, []);
+
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -57,12 +72,6 @@ function ChapterPage({ courses }) {
   };
 
   const onSubmit = async (data) => {
-    if (!chapterVideo) {
-      return;
-    }
-    if (!coverPhoto) {
-      return;
-    }
     setProcessingTo(true);
     const formData = new FormData();
     formData.append("image", coverPhoto);
@@ -73,7 +82,7 @@ function ChapterPage({ courses }) {
     formData.append("module", data.module);
     formData.append("slug", slugify(data.name));
 
-    await fetch(`${process.env.API_URL}/chapter`, {
+    await fetch(`${process.env.API_URL}/chapter/${editData.id}`, {
       method: "POST",
       body: formData,
     })
@@ -82,7 +91,7 @@ function ChapterPage({ courses }) {
           throw new Error("Bad response from server");
         } else {
           setProcessingTo(false);
-          setMessage("Chapter saved successfuly !");
+          setMessage("Chapter updated successfuly !");
           setSuccess(true);
           setChapterVideo();
           setCoverPhoto();
@@ -99,10 +108,10 @@ function ChapterPage({ courses }) {
       });
   };
 
-  return (
+  return editData ? (
     <React.Fragment>
       <Seo
-        title="Add New Chapter | ICPA Global Consultants "
+        title="Edit Chapter | ICPA Global Consultants "
         description="ICPA Global Consultants "
         canonical={`${process.env.PUBLIC_URL}/chapter`}
       />
@@ -113,7 +122,7 @@ function ChapterPage({ courses }) {
               <div className={classes.select}>
                 <Controller
                   name="category"
-                  defaultValue="Select Course Name"
+                  defaultValue={editData.course.courseName}
                   control={control}
                   render={({
                     field: { onChange, value },
@@ -129,7 +138,7 @@ function ChapterPage({ courses }) {
                       </InputLabel>
                       <Select
                         native
-                        defaultValue="Select Course Name"
+                        defaultValue={editData.course.courseName}
                         onChange={onChange}
                         label="SELECT COURSE  NAME"
                         inputProps={{
@@ -159,7 +168,7 @@ function ChapterPage({ courses }) {
               <Controller
                 name="module"
                 control={control}
-                defaultValue=""
+                defaultValue={editData.module}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -187,7 +196,7 @@ function ChapterPage({ courses }) {
               <Controller
                 name="name"
                 control={control}
-                defaultValue=""
+                defaultValue={editData.title}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -215,7 +224,7 @@ function ChapterPage({ courses }) {
               <Controller
                 name="description"
                 control={control}
-                defaultValue=""
+                defaultValue={editData.description}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -279,7 +288,7 @@ function ChapterPage({ courses }) {
                 color="primary"
                 onClick={handleSubmit(onSubmit)}
               >
-                {isProcessing ? "Saving..." : `Save`}
+                {isProcessing ? "Updating..." : `Update`}
               </Button>
             </Grid>
           </Grid>
@@ -292,12 +301,12 @@ function ChapterPage({ courses }) {
         onClose={handleClose}
       />
     </React.Fragment>
-  );
+  ) : null;
 }
 
-ChapterPage.layout = Admin;
+ChapterEditPage.layout = Admin;
 
-export default ChapterPage;
+export default ChapterEditPage;
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
@@ -309,7 +318,6 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
   const result = await fetch(`${process.env.PUBLIC_URL}/api/courses`);
   const data = await result.json();
 

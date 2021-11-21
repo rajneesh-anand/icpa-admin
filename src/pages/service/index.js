@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { slugify } from "../../../libs/helper";
+import { slugify } from "@/libs/helper";
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,10 +9,10 @@ import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import ToastMessage from "components/Snackbar/Snackbar.js";
-import DropzoneComponent from "components/Dropzone/Dropzone.js";
-import Seo from "components/Seo";
-import Admin from "layouts/Admin";
+import ToastMessage from "@/components/Snackbar/Snackbar";
+import DropzoneComponent from "@/components/Dropzone/Dropzone";
+import Seo from "@/components/Seo";
+import Admin from "@/layouts/Admin";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,7 +87,7 @@ function ServicePage({ categories }) {
     formData.append("popularity", data.popularity);
     formData.append(
       "discount",
-      data.service_fee === "0"
+      data.sale_fee === "0"
         ? 0
         : ((data.service_fee - data.sale_price) / data.service_fee) * 100
     );
@@ -232,7 +232,7 @@ function ServicePage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="SALE FEE"
+                    label="SERVICE FEE AFTER DISCOUNT"
                     variant="outlined"
                     value={value}
                     onChange={onChange}

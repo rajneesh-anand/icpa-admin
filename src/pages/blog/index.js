@@ -7,7 +7,7 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import { slugify } from "../../../libs/helper";
+import { slugify } from "@/libs/helper";
 import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";

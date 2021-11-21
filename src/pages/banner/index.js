@@ -118,11 +118,39 @@ function BannerPage({ banner }) {
         canonical={`${process.env.PUBLIC_URL}/banner`}
       />
       <div className={classes.root}>
-        <Grid container spacing={1}>
+        <div
+          style={{ padding: 16, border: "1px solid #ddd", marginBottom: 16 }}
+        >
+          <form>
+            <Grid container justifyContent="center">
+              <Grid item>
+                <label htmlFor="photo" className={classes.label}>
+                  SELECT BANNER IMAGE
+                </label>
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/*"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  {isProcessing ? "Uploading...." : `Upload`}
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+        <Grid container spacing={1} justifyContent="center" alignItems="center">
           {pics.map(
             (item, index) =>
               index > 0 && (
-                <Grid item sm={3} md={3} key={index}>
+                <Grid item sm={3} md={3} key={index} align="center">
                   <Image
                     src={item.url}
                     alt={item.url}
@@ -138,34 +166,6 @@ function BannerPage({ banner }) {
               )
           )}
         </Grid>
-
-        <form>
-          <Grid item xs={12} sm={6} md={6}>
-            <label htmlFor="photo" className={classes.label}>
-              SELECT BANNER IMAGE
-            </label>
-            <input
-              type="file"
-              id="photo"
-              name="photo"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={12} md={12} style={{ textAlign: "end" }}>
-            <div>
-              <Button
-                type="button"
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit(onSubmit)}
-              >
-                {isProcessing ? "Uploading...." : `Upload`}
-              </Button>
-            </div>
-          </Grid>
-        </form>
       </div>
       <ToastMessage
         open={open}

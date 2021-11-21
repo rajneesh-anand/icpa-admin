@@ -65,7 +65,15 @@ function OrdersPage({ orderData }) {
                   <TableCell align="left">{item.email}</TableCell>
                   <TableCell align="left">{item.orderType}</TableCell>
                   <TableCell align="left">{item.amount}</TableCell>
-                  <TableCell align="left">{item.paymentStatus}</TableCell>
+                  <TableCell
+                    align="left"
+                    style={{
+                      color:
+                        item.paymentStatus === "TXN_SUCCESS" ? "green" : "red",
+                    }}
+                  >
+                    {item.paymentStatus}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

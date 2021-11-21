@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { slugify } from "../../../libs/helper";
+import { slugify } from "@/libs/helper";
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";

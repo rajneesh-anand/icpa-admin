@@ -2,11 +2,11 @@ import React, { useState, createRef } from "react";
 import { useRouter } from "next/router";
 import { makeStyles } from "@material-ui/core/styles";
 // import Navbar from "components/Navbars/Navbar.js";
-import Footer from "components/Footer/Footer.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
-import styles from "assets/jss/layouts/adminStyle";
-import bgImage from "assets/img/sidebar-5.jpg";
-import logo from "assets/img/reactlogo.png";
+import Footer from "@/components/Footer/Footer";
+import Sidebar from "@/components/Sidebar/Sidebar";
+import styles from "@/assets/jss/layouts/adminStyle";
+import bgImage from "@/assets/img/sidebar-5.jpg";
+import logo from "@/assets/img/reactlogo.png";
 import routes from "../../routes";
 
 const useStyles = makeStyles(styles);
