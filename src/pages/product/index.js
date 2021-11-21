@@ -8,7 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
-import { slugify } from "../../../libs/helper";
+import { slugify } from "@/libs/helper";
 import dynamic from "next/dynamic";
 
 import { productCategoryOptions } from "@/constant/product";
