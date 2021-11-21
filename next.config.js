@@ -7,7 +7,7 @@ const apiUrl = isProd
   : "http://localhost:8080/api";
 
 const publicUrl = isProd
-  ? "https://sdalegal.herokuapp.com"
+  ? "https://admin.icpaglobalconsultant.com"
   : "http://localhost:3000";
 
 module.exports = withImages({
