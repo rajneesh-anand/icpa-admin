@@ -44,9 +44,10 @@ function ProductPage() {
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState();
   const [category, setCategory] = useState([]);
   const [image, setImage] = useState();
-  const [content, setContent] = useState();
+  const [content, setContent] = useState("");
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
@@ -77,12 +78,16 @@ function ProductPage() {
     setOpen(false);
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     editorRef.current = {
       CKEditor: require("@ckeditor/ckeditor5-react").CKEditor,
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
+
+    const res = await fetch(`${process.env.API_URL}/upload/category`);
+    const result = await res.json();
+    setCategoryOptions(result.category);
   }, []);
 
   const onSubmit = async (data) => {
@@ -93,11 +98,15 @@ function ProductPage() {
     formData.append("description", data.description);
     formData.append("details", content);
     formData.append("price", data.price);
-    formData.append("sale_fee", data.sale_fee);
+    formData.append("sale_price", data.sale_price);
+
     formData.append(
       "discount",
-      ((data.price - data.sale_fee) / data.price) * 100
+      data.sale_price === "0"
+        ? 0
+        : ((data.price - data.sale_price) / data.price) * 100
     );
+
     formData.append("ratings", data.ratings);
     formData.append("popularity", data.popularity);
     formData.append(
@@ -300,8 +309,8 @@ function ProductPage() {
                 )}
                 rules={{
                   pattern: {
-                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
-                    message: "Accept only numbers ! ",
+                    value: /^[1-5]+(\.[1-9])?$/,
+                    message: "Accept only numbers 1-5 ! ",
                   },
                 }}
               />
@@ -336,7 +345,7 @@ function ProductPage() {
 
             <Grid item xs={12} sm={8} md={8}>
               <Multiselect
-                options={productCategoryOptions}
+                options={categoryOptions}
                 selectedValues={catSelectedValues}
                 onSelect={onCatSelect}
                 onRemove={onCatRemove}

@@ -29,7 +29,8 @@ const rejectStyle = {
 };
 
 function DropzoneComponent(props) {
-  const { onDrop, files } = props;
+  const { onDrop, files, maxFiles } = props;
+  console.log(props);
 
   const {
     getRootProps,
@@ -40,7 +41,7 @@ function DropzoneComponent(props) {
   } = useDropzone({
     onDrop,
     accept: "image/jpeg, image/png",
-    maxFiles: 3,
+    maxFiles: Number(maxFiles),
   });
 
   const style = useMemo(
@@ -53,11 +54,13 @@ function DropzoneComponent(props) {
     [isDragActive, isDragReject, isDragAccept]
   );
 
-  const thumbs = files.map((file) => (
-    <div key={file.name} style={{ height: 72, width: 104 }}>
-      <img src={file.preview} alt={file.name} height="72" width="104" />
-    </div>
-  ));
+  const thumbs = files
+    ? files.map((file) => (
+        <div key={file.name} style={{ height: 72, width: 104 }}>
+          <img src={file.preview} alt={file.name} height="72" width="104" />
+        </div>
+      ))
+    : null;
 
   // clean up
   useEffect(
@@ -74,9 +77,7 @@ function DropzoneComponent(props) {
           <input {...getInputProps()} />
           <div>
             <i className="fas fa-cloud-upload-alt "></i>{" "}
-            <span>
-              Course Image - Drag 'n' Drop or Click here to upload image{" "}
-            </span>
+            <span>Click here to upload image - size (300x400 px)</span>
           </div>
         </div>
       </Grid>

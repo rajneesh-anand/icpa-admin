@@ -36,9 +36,9 @@ const useStyles = makeStyles((theme) => ({
 function FilePage() {
   const [franchiseFile, setFranchiseFile] = useState();
   const [faqFile, setFaqFile] = useState();
+  const [productFile, setProductFile] = useState();
   const [isProcessing, setProcessingTo] = useState(false);
-  const [chapterVideo, setChapterVideo] = useState();
-  const [coverPhoto, setCoverPhoto] = useState();
+
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
@@ -133,6 +133,43 @@ function FilePage() {
     download(JSON.stringify(data), "faq.json");
   };
 
+  const handleProductSubmit = async () => {
+    if (!productFile) {
+      alert("Please select json file with Product Category details !");
+      return;
+    }
+    setProcessingTo(true);
+    const formData = new FormData();
+    formData.append("uploadedFile", productFile);
+    try {
+      const res = await fetch(`${process.env.API_URL}/upload/category`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.status >= 400 && res.status < 600) {
+        throw new Error("Bad response from server");
+      } else {
+        setProcessingTo(false);
+        setMessage("File saved successfuly !");
+        setSuccess(true);
+        setProductFile(null);
+        setOpen(true);
+      }
+    } catch (error) {
+      setProcessingTo(false);
+      setMessage("Oops something went wrong !");
+      setSuccess(false);
+      setOpen(true);
+    }
+  };
+
+  const handleProductDownload = async () => {
+    const res = await fetch(`${process.env.API_URL}/upload/category`);
+    const data = await res.json();
+    download(JSON.stringify(data), "product-category.json");
+  };
+
   return (
     <>
       <Seo
@@ -153,7 +190,7 @@ function FilePage() {
             <input
               type="file"
               id="franchise"
-              value={franchiseFile}
+              // value={franchiseFile}
               onChange={(e) => setFranchiseFile(e.target.files[0])}
             />
             <Button
@@ -185,7 +222,7 @@ function FilePage() {
             <input
               type="file"
               id="faq"
-              value={faqFile}
+              // value={faqFile}
               onChange={(e) => setFaqFile(e.target.files[0])}
             />
             <Button
@@ -204,6 +241,41 @@ function FilePage() {
               onClick={handleFaqDownload}
             >
               Download F.A.Q File
+            </Button>
+          </div>
+        </form>
+      </div>
+      <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
+        <form>
+          <div style={{ display: "flex" }}>
+            <label
+              htmlFor="products"
+              style={{ color: "black", marginRight: 8 }}
+            >
+              UPLOAD JSON FILE FOR PRODUCTS CATEGORY
+            </label>
+            <input
+              type="file"
+              id="products"
+              // value={productFile}
+              onChange={(e) => setProductFile(e.target.files[0])}
+            />
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              onClick={handleProductSubmit}
+              style={{ marginRight: 8 }}
+            >
+              {isProcessing ? "Uploading...." : `Upload`}
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              onClick={handleProductDownload}
+            >
+              Download Product Category File
             </Button>
           </div>
         </form>

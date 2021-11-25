@@ -54,6 +54,7 @@ function ProductEditPage() {
   const router = useRouter();
   const classes = useStyles();
   const [category, setCategory] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState();
 
   const { id } = router.query;
 
@@ -82,6 +83,10 @@ function ProductEditPage() {
     const result = await res.json();
     const data = result.data;
     setEditData(data);
+
+    const res = await fetch(`${process.env.API_URL}/upload/category`);
+    const result = await res.json();
+    setCategoryOptions(result.category);
   }, []);
 
   const catSelectedValues = ["Home & Kitchen"];
@@ -102,10 +107,12 @@ function ProductEditPage() {
     formData.append("description", data.description);
     formData.append("details", content);
     formData.append("price", data.price);
-    formData.append("sale_fee", data.sale_fee);
+    formData.append("sale_price", data.sale_price);
     formData.append(
       "discount",
-      ((data.price - data.sale_fee) / data.price) * 100
+      data.sale_price === "0"
+        ? 0
+        : ((data.price - data.sale_price) / data.price) * 100
     );
     formData.append("ratings", data.ratings);
     formData.append("popularity", data.popularity);
@@ -309,8 +316,8 @@ function ProductEditPage() {
                 )}
                 rules={{
                   pattern: {
-                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
-                    message: "Accept only numbers ! ",
+                    value: /^[1-5]+(\.[1-9])?$/,
+                    message: "Accept only numbers 1-5 ! ",
                   },
                 }}
               />
@@ -345,7 +352,7 @@ function ProductEditPage() {
 
             <Grid item xs={12} sm={8} md={8}>
               <Multiselect
-                options={productCategoryOptions}
+                options={categoryOptions}
                 selectedValues={editData.category}
                 onSelect={onCatSelect}
                 onRemove={onCatRemove}

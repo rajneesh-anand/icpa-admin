@@ -241,7 +241,7 @@ function CourseEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="COURSE SALE FEE"
+                    label="COURSE DISCOUNTED FEE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -328,8 +328,8 @@ function CourseEditPage({ categories }) {
                 )}
                 rules={{
                   pattern: {
-                    value: /^([1-5])$/,
-                    message: "Accept numbers between 1-5 only ",
+                    value: /^[1-5]+(\.[1-9])?$/,
+                    message: "Accept only numbers 1-5 ! ",
                   },
                 }}
               />

@@ -37,17 +37,15 @@ function Copyright(props) {
   );
 }
 
-const theme = createTheme();
-
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
   },
 }));
 
-export default function SignInCredentialPage({ csrfToken }) {
+export default function ForgotPassword({ csrfToken }) {
   const [message, setMessage] = React.useState();
-  const classes = useStyles();
+
   const router = useRouter();
   const {
     handleSubmit,
@@ -57,52 +55,27 @@ export default function SignInCredentialPage({ csrfToken }) {
     mode: "onBlur",
   });
 
-  // const onSubmit = async (data) => {
-  //   const formData = new FormData();
-  //   formData.append("email", data.email);
-  //   formData.append("password", data.password);
-  //   try {
-  //     const res = await fetch(`${process.env.API_URL}/auth/signin`, {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-
-  //     const result = await res.json();
-
-  //     if (res.status >= 400 && res.status < 600) {
-  //       throw new Error(result.msg);
-  //     } else {
-  //       router.push("/");
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //     setMessage(error.message);
-  //   }
-  // };
-
   const onSubmit = async (data) => {
-    const res = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-      callbackUrl: `${process.env.PUBLIC_URL}`,
-    });
-    if (res?.error) setMessage(res.error);
-    if (res.url) router.push(res.url);
-  };
+    const formData = new FormData();
+    formData.append("email", data.email);
 
-  React.useEffect(() => {
-    // Getting the error details from URL
-    if (router.query.error) {
-      setMessage(router.query.error); // Shown below the input field in my example
-      setEmail(router.query.email); // To prefill the email after redirect
+    try {
+      const res = await fetch(`${process.env.API_URL}/auth/forgotpwd`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (res.status >= 400 && res.status < 600) {
+        throw new Error(result.msg);
+      } else {
+      }
+    } catch (error) {
+      console.log(error.message);
+      setMessage(error.message);
     }
-  }, [router]);
-
-  // React.useEffect(() => {
-  //   setMessage(router.query.error);
-  //   console.log(router.query.error);
-  // }, []);
+  };
 
   return (
     <div className="signin-area">
@@ -125,8 +98,8 @@ export default function SignInCredentialPage({ csrfToken }) {
             <img src="/img/logo.png" alt="logo" />
           </div>
 
-          <Typography component="h1" variant="h5">
-            Sign In
+          <Typography variant="body2" style={{ marginTop: 16, color: "green" }}>
+            Enter your registered email address to retrieve your password !
           </Typography>
 
           {message && (
@@ -136,7 +109,6 @@ export default function SignInCredentialPage({ csrfToken }) {
           )}
 
           <Box component="form" noValidate sx={{ mt: 1 }}>
-            <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <Controller
               name="email"
               control={control}
@@ -164,34 +136,7 @@ export default function SignInCredentialPage({ csrfToken }) {
                 },
               }}
             />
-            <Controller
-              name="password"
-              control={control}
-              defaultValue=""
-              render={({
-                field: { onChange, value },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  type="password"
-                  label="Enter your password *"
-                  value={value}
-                  onChange={onChange}
-                  error={!!error}
-                  helperText={error ? error.message : null}
-                />
-              )}
-              rules={{
-                required: "Password is required !",
-              }}
-            />
 
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
             <Button
               variant="contained"
               color="primary"
@@ -199,20 +144,13 @@ export default function SignInCredentialPage({ csrfToken }) {
               //   className={classes.button}
               onClick={handleSubmit(onSubmit)}
             >
-              Sign In
+              Send
             </Button>
-            {/* <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              onClick={handleSubmit(onSubmit)}
-            >
-              Sign In
-            </Button> */}
+
             <Grid container justifyContent="center">
               <Grid item>
-                <Link href="/auth/forgot-password" variant="body2">
-                  <a> Forgot password? </a>
+                <Link href="/auth/signin" variant="body2">
+                  <a>Sign In </a>
                 </Link>
               </Grid>
             </Grid>
@@ -236,6 +174,6 @@ export async function getServerSideProps(context) {
     };
   }
   return {
-    props: { csrfToken },
+    props: {},
   };
 }

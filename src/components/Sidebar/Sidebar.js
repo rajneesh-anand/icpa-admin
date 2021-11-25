@@ -13,10 +13,11 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
+import AccountCircleOutlined from "@material-ui/icons/AccountCircleOutlined";
 // core components
 import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks.js";
 import styles from "assets/jss/components/sidebarStyle.js";
-
+import Image from "next/image";
 export default function Sidebar(props) {
   const router = useRouter();
   const [session, loading] = useSession();
@@ -103,7 +104,15 @@ export default function Sidebar(props) {
         >
           {session ? (
             <div className="sidebar-drawer-mobile">
-              <img src={session.user.image} alt={session.user.name} />
+              <img
+                src={
+                  session.user.image
+                    ? session.user.image
+                    : `${process.env.PUBLIC_URL}/img/default-profile.jpg`
+                }
+                alt="profile-photo"
+              />
+
               <p>{session.user.name}</p>
               <button onClick={() => signOut()}>Sign Out</button>
             </div>
@@ -135,7 +144,14 @@ export default function Sidebar(props) {
           <div className={classes.sidebarWrapper}>
             {session ? (
               <div className="sidebar-drawer-mobile">
-                <img src={session.user.image} alt={session.user.name} />
+                <img
+                  src={
+                    session.user.image
+                      ? session.user.image
+                      : `${process.env.PUBLIC_URL}/img/default-profile.jpg`
+                  }
+                  alt="profile-photo"
+                />
                 <p>{session.user.name}</p>
                 <button onClick={() => signOut()}>Sign Out</button>
               </div>

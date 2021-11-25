@@ -135,7 +135,11 @@ function CoursePage({ categories }) {
       <div className={classes.root}>
         <form>
           <Grid container spacing={1}>
-            <DropzoneComponent onDrop={onDrop} files={selectedImage} />
+            <DropzoneComponent
+              onDrop={onDrop}
+              files={selectedImage}
+              maxFiles="1"
+            />
 
             <Grid item xs={12} sm={12} md={12}>
               <Controller
@@ -236,7 +240,7 @@ function CoursePage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="COURSE SALE FEE"
+                    label="COURSE DISCOUNTED FEE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -323,8 +327,8 @@ function CoursePage({ categories }) {
                 )}
                 rules={{
                   pattern: {
-                    value: /^([1-5])$/,
-                    message: "Accept numbers between 1-5 only ",
+                    value: /^[1-5]+(\.[1-9])?$/,
+                    message: "Accept only numbers 1-5 ! ",
                   },
                 }}
               />
