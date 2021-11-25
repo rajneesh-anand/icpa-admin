@@ -1,19 +1,15 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { signIn, getCsrfToken, getSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import Seo from "@/components/Seo";
-
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "next/link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -41,9 +37,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ForgotPassword({ csrfToken }) {
+export default function SignInCredentialPage({ csrfToken }) {
   const [message, setMessage] = React.useState();
-
   const router = useRouter();
   const {
     handleSubmit,
@@ -54,26 +49,22 @@ export default function ForgotPassword({ csrfToken }) {
   });
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("email", data.email);
-
-    try {
-      const res = await fetch(`${process.env.API_URL}/auth/forgotpwd`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await res.json();
-
-      if (res.status >= 400 && res.status < 600) {
-        throw new Error(result.msg);
-      } else {
-      }
-    } catch (error) {
-      console.log(error.message);
-      setMessage(error.message);
-    }
+    const res = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+      callbackUrl: `${process.env.PUBLIC_URL}`,
+    });
+    if (res?.error) setMessage(res.error);
+    if (res.url) router.push(res.url);
   };
+
+  React.useEffect(() => {
+    if (router.query.error) {
+      setMessage(router.query.error);
+      setEmail(router.query.email);
+    }
+  }, [router]);
 
   return (
     <div className="signin-area">
@@ -96,8 +87,8 @@ export default function ForgotPassword({ csrfToken }) {
             <img src="/img/logo.png" alt="logo" />
           </div>
 
-          <Typography variant="body2" style={{ marginTop: 16, color: "green" }}>
-            Enter your registered email address to retrieve your password !
+          <Typography component="h1" variant="h5">
+            Sign In
           </Typography>
 
           {message && (
@@ -107,6 +98,7 @@ export default function ForgotPassword({ csrfToken }) {
           )}
 
           <Box component="form" noValidate sx={{ mt: 1 }}>
+            <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <Controller
               name="email"
               control={control}
@@ -134,7 +126,34 @@ export default function ForgotPassword({ csrfToken }) {
                 },
               }}
             />
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <TextField
+                  margin="normal"
+                  fullWidth
+                  type="password"
+                  label="Enter your password *"
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  helperText={error ? error.message : null}
+                />
+              )}
+              rules={{
+                required: "Password is required !",
+              }}
+            />
 
+            {/* <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            /> */}
             <Button
               variant="contained"
               color="primary"
@@ -142,13 +161,20 @@ export default function ForgotPassword({ csrfToken }) {
               //   className={classes.button}
               onClick={handleSubmit(onSubmit)}
             >
-              Send
+              Sign In
             </Button>
-
+            {/* <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmit(onSubmit)}
+            >
+              Sign In
+            </Button> */}
             <Grid container justifyContent="center">
               <Grid item>
-                <Link href="/auth/signin" variant="body2">
-                  <a>Sign In </a>
+                <Link href="/auth/forgot-password" variant="body2">
+                  <a> Forgot password? </a>
                 </Link>
               </Grid>
             </Grid>
@@ -172,6 +198,6 @@ export async function getServerSideProps(context) {
     };
   }
   return {
-    props: {},
+    props: { csrfToken },
   };
 }

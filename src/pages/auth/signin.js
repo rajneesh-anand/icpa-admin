@@ -1,22 +1,14 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { signIn, getCsrfToken, getSession } from "next-auth/client";
-import { useRouter } from "next/router";
 import Seo from "@/components/Seo";
-
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "next/link";
-import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-// import LockOutlinedIcon from "@material-ui/icon/LockOutlinedIcon";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 import { useForm, Controller } from "react-hook-form";
-import { makeStyles } from "@material-ui/core/styles";
+import Link from "next/link";
 
 function Copyright(props) {
   return (
@@ -28,27 +20,18 @@ function Copyright(props) {
       style={{ marginTop: 32 }}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://icpaglobalconsultant.com/">
-        ICPA GLOBAL CONSULTANT
+      <Link href="https://icpaglobalconsultant.com/">
+        <a target="_blank">ICPA GLOBAL CONSULTANT </a>
       </Link>{" "}
       {new Date().getFullYear()}
-      {"."}
     </Typography>
   );
 }
 
-const theme = createTheme();
+export default function SignInPage({ csrfToken }) {
+  const [users, setUsers] = useState([]);
+  const [message, setMessage] = useState();
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-}));
-
-export default function SignInCredentialPage({ csrfToken }) {
-  const [message, setMessage] = React.useState();
-  const classes = useStyles();
-  const router = useRouter();
   const {
     handleSubmit,
     formState: { errors },
@@ -57,52 +40,25 @@ export default function SignInCredentialPage({ csrfToken }) {
     mode: "onBlur",
   });
 
-  // const onSubmit = async (data) => {
-  //   const formData = new FormData();
-  //   formData.append("email", data.email);
-  //   formData.append("password", data.password);
-  //   try {
-  //     const res = await fetch(`${process.env.API_URL}/auth/signin`, {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-
-  //     const result = await res.json();
-
-  //     if (res.status >= 400 && res.status < 600) {
-  //       throw new Error(result.msg);
-  //     } else {
-  //       router.push("/");
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //     setMessage(error.message);
-  //   }
-  // };
-
   const onSubmit = async (data) => {
-    const res = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-      callbackUrl: `${process.env.PUBLIC_URL}`,
-    });
-    if (res?.error) setMessage(res.error);
-    if (res.url) router.push(res.url);
+    let result = users.filter((user) => user.email === data.email);
+    console.log(result);
+    if (result.length == 0) {
+      setMessage(
+        "You are not authorized to login, Contact your system administrator !"
+      );
+    } else {
+      await signIn("email", {
+        email: data.email,
+      });
+    }
   };
 
-  React.useEffect(() => {
-    // Getting the error details from URL
-    if (router.query.error) {
-      setMessage(router.query.error); // Shown below the input field in my example
-      setEmail(router.query.email); // To prefill the email after redirect
-    }
-  }, [router]);
-
-  // React.useEffect(() => {
-  //   setMessage(router.query.error);
-  //   console.log(router.query.error);
-  // }, []);
+  useEffect(async () => {
+    const res = await fetch("/api/users");
+    const results = await res.json();
+    setUsers(results.data);
+  }, []);
 
   return (
     <div className="signin-area">
@@ -111,11 +67,11 @@ export default function SignInCredentialPage({ csrfToken }) {
         description="ICPA Global Consultants - Sign In"
         canonical={`${process.env.PUBLIC_URL}/auth/signin`}
       />
-      <Container component="main" maxWidth="xs">
+
+      <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Box
           sx={{
-            // marginTop: 8,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -128,11 +84,12 @@ export default function SignInCredentialPage({ csrfToken }) {
           <Typography component="h1" variant="h5">
             Sign In
           </Typography>
-
           {message && (
-            <Typography component="h6" variant="h6" color="error">
-              {message}
-            </Typography>
+            <div style={{ textAlign: "center" }}>
+              <Typography component="h6" variant="h6" color="error">
+                {message}
+              </Typography>
+            </div>
           )}
 
           <Box component="form" noValidate sx={{ mt: 1 }}>
@@ -164,58 +121,15 @@ export default function SignInCredentialPage({ csrfToken }) {
                 },
               }}
             />
-            <Controller
-              name="password"
-              control={control}
-              defaultValue=""
-              render={({
-                field: { onChange, value },
-                fieldState: { error },
-              }) => (
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  type="password"
-                  label="Enter your password *"
-                  value={value}
-                  onChange={onChange}
-                  error={!!error}
-                  helperText={error ? error.message : null}
-                />
-              )}
-              rules={{
-                required: "Password is required !",
-              }}
-            />
 
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
             <Button
               variant="contained"
               color="primary"
               fullWidth
-              //   className={classes.button}
               onClick={handleSubmit(onSubmit)}
             >
-              Sign In
+              Send Sign In Link
             </Button>
-            {/* <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              onClick={handleSubmit(onSubmit)}
-            >
-              Sign In
-            </Button> */}
-            <Grid container justifyContent="center">
-              <Grid item>
-                <Link href="/auth/forgot-password" variant="body2">
-                  <a> Forgot password? </a>
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

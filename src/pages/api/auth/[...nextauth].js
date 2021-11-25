@@ -67,7 +67,7 @@ const options = {
   },
   pages: {
     error: "/auth/signin",
-    verifyRequest: "/auth/verify-account",
+    verifyRequest: "/auth/verify",
     signIn: "/auth/signin",
   },
 };
