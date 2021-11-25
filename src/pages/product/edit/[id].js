@@ -84,9 +84,9 @@ function ProductEditPage() {
     const data = result.data;
     setEditData(data);
 
-    const res = await fetch(`${process.env.API_URL}/upload/category`);
-    const result = await res.json();
-    setCategoryOptions(result.category);
+    const cat = await fetch(`${process.env.API_URL}/upload/category`);
+    const catresult = await cat.json();
+    setCategoryOptions(catresult.category);
   }, []);
 
   const catSelectedValues = ["Home & Kitchen"];
