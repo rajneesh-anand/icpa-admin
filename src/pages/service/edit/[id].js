@@ -30,14 +30,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ServiceEditPage({ serviceData }) {
+function ServiceEditPage({ serviceData, categories }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
   const [selectedImage, setSelectedImage] = useState([]);
   const [usage, setUsage] = useState(serviceData.usage);
-  const [categories, setCategory] = useState([]);
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
@@ -75,10 +74,6 @@ function ServiceEditPage({ serviceData }) {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-
-    const result = await fetch(`${process.env.PUBLIC_URL}/api/categories`);
-    const data = await result.json();
-    setCategory(data.data);
   }, []);
 
   const onSubmit = async (data) => {
@@ -470,11 +465,12 @@ export async function getServerSideProps(context) {
   }
 
   const { id } = context.params;
-  const res = await fetch(`${process.env.PUBLIC_URL}/api/service/${id}`);
-  const result = await res.json();
-  const data = result.data;
+  const res = await fetch(`${process.env.PUBLIC_URL}/api/categories`);
+  const data = await res.json();
+  const service = await fetch(`${process.env.PUBLIC_URL}/api/service/${id}`);
+  const result = await service.json();
 
   return {
-    props: { serviceData: data },
+    props: { serviceData: result.data, categories: data.data },
   };
 }

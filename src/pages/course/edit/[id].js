@@ -492,7 +492,7 @@ function CourseEditPage({ categories, editData }) {
               <div className={classes.select}>
                 <Controller
                   name="category"
-                  defaultValue={categories[0].name}
+                  defaultValue={editData.category.name}
                   control={control}
                   render={({
                     field: { onChange, value },
@@ -508,24 +508,19 @@ function CourseEditPage({ categories, editData }) {
                       </InputLabel>
                       <Select
                         native
-                        defaultValue={
-                          categories ? categories[0].name : "Add Category"
-                        }
+                        defaultValue={editData.category.name}
                         onChange={onChange}
                         label="COURSE CATEGORY"
                         inputProps={{
                           id: "category",
                         }}
                       >
-                        {categories ? (
+                        {categories &&
                           categories.map((item, i) => (
                             <option key={i} value={item.name}>
                               {item.name}
                             </option>
-                          ))
-                        ) : (
-                          <option value="Add Category">Add Category</option>
-                        )}
+                          ))}
                       </Select>
                     </FormControl>
                   )}
