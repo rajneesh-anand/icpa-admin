@@ -160,7 +160,7 @@ function ProductEditPage() {
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} md={12} style={{ margin: "8px 0px" }}>
               <label htmlFor="photo" className={classes.label}>
-                SELECT PRODUCT PHOTO
+                SELECT PRODUCT PHOTO - SIZE ( 320 x 400 Px )
               </label>
               <input
                 type="file"
