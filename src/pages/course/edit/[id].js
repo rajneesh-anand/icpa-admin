@@ -30,24 +30,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CourseEditPage({ categories }) {
+function CourseEditPage({ categories, editData }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
   const [selectedImage, setSelectedImage] = useState([]);
-  const [usage, setUsage] = useState("");
+  const [usage, setUsage] = useState(editData.details);
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
-  const [editData, setEditData] = useState();
+
   const router = useRouter();
   const classes = useStyles();
 
   const { handleSubmit, setValue, control } = useForm({
     mode: "onBlur",
   });
-  const { id } = router.query;
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -72,10 +71,6 @@ function CourseEditPage({ categories }) {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-    const res = await fetch(`/api/course/${id}`);
-    const result = await res.json();
-    const data = result.data;
-    setEditData(data);
   }, []);
 
   const onSubmit = async (data) => {
@@ -130,7 +125,7 @@ function CourseEditPage({ categories }) {
       });
   };
 
-  return editData ? (
+  return (
     <React.Fragment>
       <Seo
         title="Edit Course | ICPA Global Consultants "
@@ -590,9 +585,7 @@ function CourseEditPage({ categories }) {
                   }}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    const edit_data = data ? data : editData.details;
-
-                    setUsage(edit_data);
+                    setUsage(data);
                   }}
                 />
               ) : (
@@ -622,7 +615,7 @@ function CourseEditPage({ categories }) {
         onClose={handleClose}
       />
     </React.Fragment>
-  ) : null;
+  );
 }
 
 CourseEditPage.layout = Admin;
@@ -639,11 +632,13 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
+  const { id } = context.params;
   const result = await fetch(`${process.env.PUBLIC_URL}/api/categories`);
   const data = await result.json();
+  const course = await fetch(`${process.env.PUBLIC_URL}/api/course/${id}`);
+  const courseData = await course.json();
 
   return {
-    props: { categories: data.data },
+    props: { categories: data.data, editData: courseData.data },
   };
 }

@@ -51,7 +51,7 @@ function TestinomialListPage({ testinomials }) {
           </Link>
         </Grid>
         {data ? (
-          <Grid item>
+          <Grid item xs={12} sm={12} md={12}>
             <TableContainer>
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>

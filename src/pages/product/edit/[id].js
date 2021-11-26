@@ -12,8 +12,6 @@ import { useRouter } from "next/router";
 import { slugify } from "@/libs/helper";
 import dynamic from "next/dynamic";
 
-import { productCategoryOptions } from "@/constant/product";
-
 const Multiselect = dynamic(
   () =>
     import("multiselect-react-dropdown").then((module) => module.Multiselect),
@@ -40,23 +38,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ProductEditPage() {
+function ProductEditPage({ productData }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
   const [image, setImage] = useState();
-  const [content, setContent] = useState();
+  const [content, setContent] = useState(productData.details);
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
-  const [editData, setEditData] = useState();
   const router = useRouter();
   const classes = useStyles();
   const [category, setCategory] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState();
-
-  const { id } = router.query;
 
   const {
     handleSubmit,
@@ -79,18 +74,12 @@ function ProductEditPage() {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-    const res = await fetch(`/api/product/${id}`);
-    const result = await res.json();
-    const data = result.data;
-    setEditData(data);
-
-    const cat = await fetch(`${process.env.API_URL}/upload/category`);
-    const catresult = await cat.json();
-    setCategoryOptions(catresult.category);
+    const data = await fetch(`${process.env.API_URL}/upload/category`);
+    const result = await data.json();
+    setCategoryOptions(result.category);
   }, []);
 
   const catSelectedValues = ["Home & Kitchen"];
-
   const onCatSelect = (event) => {
     setCategory(event);
   };
@@ -124,7 +113,7 @@ function ProductEditPage() {
     );
     formData.append("slug", slugify(data.name));
 
-    await fetch(`${process.env.API_URL}/product/${editData.id}`, {
+    await fetch(`${process.env.API_URL}/product/${productData.id}`, {
       method: "POST",
       body: formData,
     })
@@ -148,7 +137,7 @@ function ProductEditPage() {
       });
   };
 
-  return editData ? (
+  return (
     <React.Fragment>
       <Seo
         title="Add Product | ICPA Global Consultants "
@@ -175,7 +164,7 @@ function ProductEditPage() {
               <Controller
                 name="name"
                 control={control}
-                defaultValue={editData.name}
+                defaultValue={productData.name}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -202,7 +191,7 @@ function ProductEditPage() {
               <Controller
                 name="description"
                 control={control}
-                defaultValue={editData.description}
+                defaultValue={productData.description}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -230,7 +219,7 @@ function ProductEditPage() {
               <Controller
                 name="price"
                 control={control}
-                defaultValue={editData.price}
+                defaultValue={productData.price}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -262,7 +251,7 @@ function ProductEditPage() {
               <Controller
                 name="sale_price"
                 control={control}
-                defaultValue={editData.sellingPrice}
+                defaultValue={productData.sellingPrice}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -294,7 +283,7 @@ function ProductEditPage() {
               <Controller
                 name="ratings"
                 control={control}
-                defaultValue={editData.ratings}
+                defaultValue={productData.ratings}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -327,7 +316,7 @@ function ProductEditPage() {
               <Controller
                 name="popularity"
                 control={control}
-                defaultValue={editData.popularity}
+                defaultValue={productData.popularity}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -353,7 +342,7 @@ function ProductEditPage() {
             <Grid item xs={12} sm={8} md={8}>
               <Multiselect
                 options={categoryOptions}
-                selectedValues={editData.category}
+                selectedValues={productData.category}
                 onSelect={onCatSelect}
                 onRemove={onCatRemove}
                 placeholder="+ Add Category"
@@ -367,7 +356,7 @@ function ProductEditPage() {
               {editorLoaded ? (
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editData.details}
+                  data={productData.details}
                   onReady={(editor) => {
                     editor.editing.view.change((writer) => {
                       writer.setStyle(
@@ -379,8 +368,7 @@ function ProductEditPage() {
                   }}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    const edit_data = data ? data : editData.details;
-                    setContent(edit_data);
+                    setContent(data);
                   }}
                 />
               ) : (
@@ -409,7 +397,7 @@ function ProductEditPage() {
         />
       </div>
     </React.Fragment>
-  ) : null;
+  );
 }
 
 ProductEditPage.layout = Admin;
@@ -425,7 +413,13 @@ export async function getServerSideProps(context) {
       },
     };
   }
+
+  const { id } = context.params;
+  const res = await fetch(`${process.env.PUBLIC_URL}/api/product/${id}`);
+  const result = await res.json();
+  const data = result.data;
+
   return {
-    props: {},
+    props: { productData: data },
   };
 }

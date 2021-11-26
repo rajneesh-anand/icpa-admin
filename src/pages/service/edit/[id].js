@@ -30,20 +30,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ServiceEditPage({ categories }) {
+function ServiceEditPage({ serviceData }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
   const [selectedImage, setSelectedImage] = useState([]);
-  const [usage, setUsage] = useState("");
+  const [usage, setUsage] = useState(serviceData.usage);
+  const [categories, setCategory] = useState([]);
   const [message, setMessage] = useState();
-  const [editData, setEditData] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
   const classes = useStyles();
   const router = useRouter();
-  const { id } = router.query;
 
   const {
     handleSubmit,
@@ -76,10 +75,10 @@ function ServiceEditPage({ categories }) {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-    const res = await fetch(`/api/service/${id}`);
-    const result = await res.json();
-    const data = result.data;
-    setEditData(data);
+
+    const result = await fetch(`${process.env.PUBLIC_URL}/api/categories`);
+    const data = await result.json();
+    setCategory(data.data);
   }, []);
 
   const onSubmit = async (data) => {
@@ -105,7 +104,7 @@ function ServiceEditPage({ categories }) {
     formData.append("usage", usage);
     formData.append("slug", slugify(data.service_name));
 
-    await fetch(`${process.env.API_URL}/service/${editData.id}`, {
+    await fetch(`${process.env.API_URL}/service/${serviceData.id}`, {
       method: "POST",
       body: formData,
     })
@@ -130,7 +129,7 @@ function ServiceEditPage({ categories }) {
       });
   };
 
-  return editData ? (
+  return (
     <React.Fragment>
       <Seo
         title="Add New Service | ICPA Global Consultants "
@@ -146,7 +145,7 @@ function ServiceEditPage({ categories }) {
               <Controller
                 name="service_name"
                 control={control}
-                defaultValue={editData.serviceName}
+                defaultValue={serviceData.serviceName}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -173,7 +172,7 @@ function ServiceEditPage({ categories }) {
               <Controller
                 name="service_desc"
                 control={control}
-                defaultValue={editData.description}
+                defaultValue={serviceData.description}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -201,7 +200,7 @@ function ServiceEditPage({ categories }) {
               <Controller
                 name="service_fee"
                 control={control}
-                defaultValue={editData.serviceFee}
+                defaultValue={serviceData.serviceFee}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -234,7 +233,7 @@ function ServiceEditPage({ categories }) {
               <Controller
                 name="sale_price"
                 control={control}
-                defaultValue={editData.saleFee}
+                defaultValue={serviceData.saleFee}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -268,7 +267,7 @@ function ServiceEditPage({ categories }) {
               <Controller
                 name="gst"
                 control={control}
-                defaultValue={editData.gst}
+                defaultValue={serviceData.gst}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -281,7 +280,7 @@ function ServiceEditPage({ categories }) {
                     <InputLabel htmlFor="gst_rate">GST RATE</InputLabel>
                     <Select
                       native
-                      defaultValue={editData.gst}
+                      defaultValue={serviceData.gst}
                       onChange={onChange}
                       label="GST Rate"
                       inputProps={{
@@ -305,7 +304,7 @@ function ServiceEditPage({ categories }) {
                 <Controller
                   name="category"
                   control={control}
-                  defaultValue={editData.category.name}
+                  defaultValue={serviceData.category.name}
                   render={({
                     field: { onChange, value },
                     fieldState: { error },
@@ -321,21 +320,18 @@ function ServiceEditPage({ categories }) {
                       <Select
                         native
                         onChange={onChange}
-                        defaultValue={editData.category.name}
+                        defaultValue={serviceData.category.name}
                         label="Service Category"
                         inputProps={{
                           id: "category",
                         }}
                       >
-                        {categories ? (
+                        {categories &&
                           categories.map((item, i) => (
                             <option key={i} value={item.name}>
                               {item.name}
                             </option>
-                          ))
-                        ) : (
-                          <option value="Add Category">Add Category</option>
-                        )}
+                          ))}
                       </Select>
                     </FormControl>
                   )}
@@ -347,7 +343,7 @@ function ServiceEditPage({ categories }) {
               <Controller
                 name="popularity"
                 control={control}
-                defaultValue={editData.popularity}
+                defaultValue={serviceData.popularity}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -375,7 +371,7 @@ function ServiceEditPage({ categories }) {
                 <Controller
                   name="status"
                   control={control}
-                  defaultValue={editData.status ? "Active" : "Inactive"}
+                  defaultValue={serviceData.status ? "Active" : "Inactive"}
                   render={({
                     field: { onChange, value },
                     fieldState: { error },
@@ -390,7 +386,9 @@ function ServiceEditPage({ categories }) {
                       </InputLabel>
                       <Select
                         native
-                        defaultValue={editData.status ? "Active" : "Inactive"}
+                        defaultValue={
+                          serviceData.status ? "Active" : "Inactive"
+                        }
                         onChange={onChange}
                         label="Service Status"
                         inputProps={{
@@ -410,7 +408,7 @@ function ServiceEditPage({ categories }) {
               {editorLoaded ? (
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editData.usage}
+                  data={serviceData.usage}
                   onReady={(editor) => {
                     editor.editing.view.change((writer) => {
                       writer.setStyle(
@@ -422,9 +420,8 @@ function ServiceEditPage({ categories }) {
                   }}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    const edit_data = data ? data : editData.usage;
 
-                    setUsage(edit_data);
+                    setUsage(data);
                   }}
                 />
               ) : (
@@ -454,7 +451,7 @@ function ServiceEditPage({ categories }) {
         onClose={handleClose}
       />
     </React.Fragment>
-  ) : null;
+  );
 }
 
 ServiceEditPage.layout = Admin;
@@ -472,10 +469,12 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const result = await fetch(`${process.env.PUBLIC_URL}/api/categories`);
-  const data = await result.json();
+  const { id } = context.params;
+  const res = await fetch(`${process.env.PUBLIC_URL}/api/service/${id}`);
+  const result = await res.json();
+  const data = result.data;
 
   return {
-    props: { categories: data.data },
+    props: { serviceData: data },
   };
 }
