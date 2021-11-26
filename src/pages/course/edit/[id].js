@@ -590,7 +590,9 @@ function CourseEditPage({ categories }) {
                   }}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    setUsage(data);
+                    const edit_data = data ? data : editData.details;
+
+                    setUsage(edit_data);
                   }}
                 />
               ) : (

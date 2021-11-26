@@ -379,7 +379,8 @@ function ProductEditPage() {
                   }}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    setContent(data);
+                    const edit_data = data ? data : editData.details;
+                    setContent(edit_data);
                   }}
                 />
               ) : (

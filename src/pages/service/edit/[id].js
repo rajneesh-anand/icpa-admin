@@ -422,7 +422,9 @@ function ServiceEditPage({ categories }) {
                   }}
                   onChange={(event, editor) => {
                     const data = editor.getData();
-                    setUsage(data);
+                    const edit_data = data ? data : editData.usage;
+
+                    setUsage(edit_data);
                   }}
                 />
               ) : (
