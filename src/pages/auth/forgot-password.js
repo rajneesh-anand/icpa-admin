@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import { signIn, getCsrfToken, getSession } from "next-auth/client";
+import { useRouter } from "next/router";
 import Seo from "@/components/Seo";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import Link from "next/link";
+import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { useForm, Controller } from "react-hook-form";
-import Link from "next/link";
+import { makeStyles } from "@material-ui/core/styles";
 
 function Copyright(props) {
   return (
@@ -20,18 +26,24 @@ function Copyright(props) {
       style={{ marginTop: 32 }}
     >
       {"Copyright © "}
-      <Link href="https://icpaglobalconsultant.com/">
-        <a target="_blank">ICPA GLOBAL CONSULTANT </a>
+      <Link color="inherit" href="https://icpaglobalconsultant.com/">
+        ICPA GLOBAL CONSULTANT
       </Link>{" "}
       {new Date().getFullYear()}
     </Typography>
   );
 }
 
-export default function SignInPage({ csrfToken }) {
-  const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState();
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
+export default function ForgotPassword({ csrfToken }) {
+  const [message, setMessage] = React.useState();
+
+  const router = useRouter();
   const {
     handleSubmit,
     formState: { errors },
@@ -41,24 +53,26 @@ export default function SignInPage({ csrfToken }) {
   });
 
   const onSubmit = async (data) => {
-    let result = users.filter((user) => user.email === data.email);
-    console.log(result);
-    if (result.length == 0) {
-      setMessage(
-        "You are not authorized to login, Contact your system administrator !"
-      );
-    } else {
-      await signIn("email", {
-        email: data.email,
+    const formData = new FormData();
+    formData.append("email", data.email);
+
+    try {
+      const res = await fetch(`${process.env.API_URL}/auth/forgotpwd`, {
+        method: "POST",
+        body: formData,
       });
+
+      const result = await res.json();
+
+      if (res.status >= 400 && res.status < 600) {
+        throw new Error(result.msg);
+      } else {
+      }
+    } catch (error) {
+      console.log(error.message);
+      setMessage(error.message);
     }
   };
-
-  useEffect(async () => {
-    const res = await fetch("/api/users");
-    const results = await res.json();
-    setUsers(results.data);
-  }, []);
 
   return (
     <div className="signin-area">
@@ -67,11 +81,11 @@ export default function SignInPage({ csrfToken }) {
         description="ICPA Global Consultants - Sign In"
         canonical={`${process.env.PUBLIC_URL}/auth/signin`}
       />
-
-      <Container component="main" maxWidth="sm">
+      <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
+            // marginTop: 8,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -81,19 +95,17 @@ export default function SignInPage({ csrfToken }) {
             <img src="/img/logo.png" alt="logo" />
           </div>
 
-          <Typography component="h1" variant="h5">
-            Sign In
+          <Typography variant="body2" style={{ marginTop: 16, color: "green" }}>
+            Enter your registered email address to retrieve your password !
           </Typography>
+
           {message && (
-            <div style={{ textAlign: "center" }}>
-              <Typography component="h6" variant="h6" color="error">
-                {message}
-              </Typography>
-            </div>
+            <Typography component="h6" variant="h6" color="error">
+              {message}
+            </Typography>
           )}
 
           <Box component="form" noValidate sx={{ mt: 1 }}>
-            <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <Controller
               name="email"
               control={control}
@@ -126,10 +138,19 @@ export default function SignInPage({ csrfToken }) {
               variant="contained"
               color="primary"
               fullWidth
+              //   className={classes.button}
               onClick={handleSubmit(onSubmit)}
             >
-              Send Sign In Link
+              Send
             </Button>
+
+            <Grid container justifyContent="center">
+              <Grid item>
+                <Link href="/auth/signin" variant="body2">
+                  <a>Sign In </a>
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
@@ -150,6 +171,6 @@ export async function getServerSideProps(context) {
     };
   }
   return {
-    props: { csrfToken },
+    props: {},
   };
 }

@@ -30,24 +30,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CourseEditPage({ categories }) {
+function CourseEditPage({ categories, editData }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
   const [selectedImage, setSelectedImage] = useState([]);
-  const [usage, setUsage] = useState("");
+  const [usage, setUsage] = useState(editData.details);
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
-  const [editData, setEditData] = useState();
+
   const router = useRouter();
   const classes = useStyles();
 
   const { handleSubmit, setValue, control } = useForm({
     mode: "onBlur",
   });
-  const { id } = router.query;
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -72,10 +71,6 @@ function CourseEditPage({ categories }) {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-    const res = await fetch(`/api/course/${id}`);
-    const result = await res.json();
-    const data = result.data;
-    setEditData(data);
   }, []);
 
   const onSubmit = async (data) => {
@@ -130,7 +125,7 @@ function CourseEditPage({ categories }) {
       });
   };
 
-  return editData ? (
+  return (
     <React.Fragment>
       <Seo
         title="Edit Course | ICPA Global Consultants "
@@ -241,7 +236,7 @@ function CourseEditPage({ categories }) {
                   fieldState: { error },
                 }) => (
                   <TextField
-                    label="COURSE SALE FEE"
+                    label="COURSE DISCOUNTED FEE"
                     variant="outlined"
                     value={value}
                     onChange={onChange}
@@ -328,8 +323,8 @@ function CourseEditPage({ categories }) {
                 )}
                 rules={{
                   pattern: {
-                    value: /^([1-5])$/,
-                    message: "Accept numbers between 1-5 only ",
+                    value: /^[1-5]+(\.[1-9])?$/,
+                    message: "Accept only numbers 1-5 ! ",
                   },
                 }}
               />
@@ -497,7 +492,7 @@ function CourseEditPage({ categories }) {
               <div className={classes.select}>
                 <Controller
                   name="category"
-                  defaultValue={categories[0].name}
+                  defaultValue={editData.category.name}
                   control={control}
                   render={({
                     field: { onChange, value },
@@ -513,24 +508,19 @@ function CourseEditPage({ categories }) {
                       </InputLabel>
                       <Select
                         native
-                        defaultValue={
-                          categories ? categories[0].name : "Add Category"
-                        }
+                        defaultValue={editData.category.name}
                         onChange={onChange}
                         label="COURSE CATEGORY"
                         inputProps={{
                           id: "category",
                         }}
                       >
-                        {categories ? (
+                        {categories &&
                           categories.map((item, i) => (
                             <option key={i} value={item.name}>
                               {item.name}
                             </option>
-                          ))
-                        ) : (
-                          <option value="Add Category">Add Category</option>
-                        )}
+                          ))}
                       </Select>
                     </FormControl>
                   )}
@@ -620,7 +610,7 @@ function CourseEditPage({ categories }) {
         onClose={handleClose}
       />
     </React.Fragment>
-  ) : null;
+  );
 }
 
 CourseEditPage.layout = Admin;
@@ -637,11 +627,13 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
+  const { id } = context.params;
   const result = await fetch(`${process.env.PUBLIC_URL}/api/categories`);
   const data = await result.json();
+  const course = await fetch(`${process.env.PUBLIC_URL}/api/course/${id}`);
+  const courseData = await course.json();
 
   return {
-    props: { categories: data.data },
+    props: { categories: data.data, editData: courseData.data },
   };
 }

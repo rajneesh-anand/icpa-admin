@@ -27,16 +27,19 @@ const useStyles = makeStyles({
   },
 });
 
-function TestinomialListPage({ testinomials }) {
+function FaqListPage({ faq }) {
   const classes = useStyles();
-  const data = testinomials ? JSON.parse(testinomials) : null;
+  const data = faq ? JSON.parse(faq) : null;
+  const truncate = (str, no_words) => {
+    return htmr(str.split(" ").splice(0, no_words).join(" ") + "  ... ...");
+  };
 
   return (
     <>
       <Seo
-        title="Testinomials List | ICPA Global Consultants "
-        description="ICPA Global Consultants - Testinomial"
-        canonical={`${process.env.PUBLIC_URL}/testinomials`}
+        title="F.A.Q List | ICPA Global Consultants "
+        description="ICPA Global Consultants - FAQ"
+        canonical={`${process.env.PUBLIC_URL}/faq-list`}
       />
       <Grid container>
         <Grid
@@ -46,20 +49,20 @@ function TestinomialListPage({ testinomials }) {
           md={12}
           style={{ textAlign: "end", marginTop: 8 }}
         >
-          <Link href="/testinomial">
-            <a className="default-btn">Add New Testinomial</a>
+          <Link href="/faq">
+            <a className="default-btn">Add New F.A.Q</a>
           </Link>
         </Grid>
         {data ? (
-          <Grid item xs={12} sm={12} md={12}>
+          <Grid item>
             <TableContainer>
               <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell align="left">No.</TableCell>
-                    <TableCell align="left">Client Name</TableCell>
-                    <TableCell align="left">Client Organization</TableCell>
-                    <TableCell align="left">Comment Description</TableCell>
+                    <TableCell align="left">Question</TableCell>
+                    <TableCell align="left">Description</TableCell>
+                    <TableCell align="left">Status</TableCell>
                     <TableCell align="center">Action</TableCell>
                   </TableRow>
                 </TableHead>
@@ -67,13 +70,20 @@ function TestinomialListPage({ testinomials }) {
                   {data.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell align="left">{index + 1}</TableCell>
-                      <TableCell align="left">{item.name}</TableCell>
-                      <TableCell align="left">{item.company}</TableCell>
+                      <TableCell align="left">{item.title}</TableCell>
                       <TableCell align="left">
-                        {htmr(item.description)}
+                        {truncate(item.description, 20)}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        style={{
+                          color: item.status ? "green" : "red",
+                        }}
+                      >
+                        {item.status ? "Active" : "Inactive"}
                       </TableCell>
                       <TableCell align="center">
-                        <Link href={`/testinomial/edit/${item.id}`}>
+                        <Link href={`/faq/edit/${item.id}`}>
                           <a>
                             <div>
                               <EditIcon />
@@ -90,7 +100,7 @@ function TestinomialListPage({ testinomials }) {
         ) : (
           <Grid item xs={12} sm={12} md={12}>
             <div className="content-center">
-              <p>Testinomial List is empty !</p>
+              <p>F.A.Q List is empty !</p>
             </div>
           </Grid>
         )}
@@ -98,9 +108,9 @@ function TestinomialListPage({ testinomials }) {
     </>
   );
 }
-TestinomialListPage.layout = Admin;
+FaqListPage.layout = Admin;
 
-export default TestinomialListPage;
+export default FaqListPage;
 
 export const getServerSideProps = async (context) => {
   const session = await getSession(context);
@@ -113,7 +123,7 @@ export const getServerSideProps = async (context) => {
     };
   }
 
-  const data = await prisma.testinomials.findMany({
+  const data = await prisma.faq.findMany({
     orderBy: [
       {
         id: "asc",
@@ -123,7 +133,7 @@ export const getServerSideProps = async (context) => {
 
   return {
     props: {
-      testinomials: data.length != 0 ? JSON.stringify(data) : null,
+      faq: data.length != 0 ? JSON.stringify(data) : null,
     },
   };
 };

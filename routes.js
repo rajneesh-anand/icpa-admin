@@ -40,6 +40,11 @@ const Routes = [
     icon: FilterNone,
   },
   {
+    path: "/faq-list",
+    name: "F.A.Q",
+    icon: FilterNone,
+  },
+  {
     path: "/orders",
     name: "Orders",
     icon: FilterNone,

@@ -12,8 +12,6 @@ import { useRouter } from "next/router";
 import { slugify } from "@/libs/helper";
 import dynamic from "next/dynamic";
 
-import { productCategoryOptions } from "@/constant/product";
-
 const Multiselect = dynamic(
   () =>
     import("multiselect-react-dropdown").then((module) => module.Multiselect),
@@ -40,22 +38,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ProductEditPage() {
+function ProductEditPage({ productData }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [isProcessing, setProcessingTo] = useState(false);
   const [image, setImage] = useState();
-  const [content, setContent] = useState();
+  const [content, setContent] = useState(productData.details);
   const [message, setMessage] = useState();
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState();
-  const [editData, setEditData] = useState();
   const router = useRouter();
   const classes = useStyles();
   const [category, setCategory] = useState([]);
-
-  const { id } = router.query;
+  const [categoryOptions, setCategoryOptions] = useState();
 
   const {
     handleSubmit,
@@ -78,14 +74,12 @@ function ProductEditPage() {
       ClassicEditor: require("@ckeditor/ckeditor5-build-classic"),
     };
     setEditorLoaded(true);
-    const res = await fetch(`/api/product/${id}`);
-    const result = await res.json();
-    const data = result.data;
-    setEditData(data);
+    const data = await fetch(`${process.env.API_URL}/upload/category`);
+    const result = await data.json();
+    setCategoryOptions(result.category);
   }, []);
 
   const catSelectedValues = ["Home & Kitchen"];
-
   const onCatSelect = (event) => {
     setCategory(event);
   };
@@ -102,10 +96,12 @@ function ProductEditPage() {
     formData.append("description", data.description);
     formData.append("details", content);
     formData.append("price", data.price);
-    formData.append("sale_fee", data.sale_fee);
+    formData.append("sale_price", data.sale_price);
     formData.append(
       "discount",
-      ((data.price - data.sale_fee) / data.price) * 100
+      data.sale_price === "0"
+        ? 0
+        : ((data.price - data.sale_price) / data.price) * 100
     );
     formData.append("ratings", data.ratings);
     formData.append("popularity", data.popularity);
@@ -117,7 +113,7 @@ function ProductEditPage() {
     );
     formData.append("slug", slugify(data.name));
 
-    await fetch(`${process.env.API_URL}/product/${editData.id}`, {
+    await fetch(`${process.env.API_URL}/product/${productData.id}`, {
       method: "POST",
       body: formData,
     })
@@ -141,7 +137,7 @@ function ProductEditPage() {
       });
   };
 
-  return editData ? (
+  return (
     <React.Fragment>
       <Seo
         title="Add Product | ICPA Global Consultants "
@@ -153,7 +149,7 @@ function ProductEditPage() {
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} md={12} style={{ margin: "8px 0px" }}>
               <label htmlFor="photo" className={classes.label}>
-                SELECT PRODUCT PHOTO
+                SELECT PRODUCT PHOTO - SIZE ( 320 x 400 Px )
               </label>
               <input
                 type="file"
@@ -168,7 +164,7 @@ function ProductEditPage() {
               <Controller
                 name="name"
                 control={control}
-                defaultValue={editData.name}
+                defaultValue={productData.name}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -195,7 +191,7 @@ function ProductEditPage() {
               <Controller
                 name="description"
                 control={control}
-                defaultValue={editData.description}
+                defaultValue={productData.description}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -223,7 +219,7 @@ function ProductEditPage() {
               <Controller
                 name="price"
                 control={control}
-                defaultValue={editData.price}
+                defaultValue={productData.price}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -255,7 +251,7 @@ function ProductEditPage() {
               <Controller
                 name="sale_price"
                 control={control}
-                defaultValue={editData.sellingPrice}
+                defaultValue={productData.sellingPrice}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -287,7 +283,7 @@ function ProductEditPage() {
               <Controller
                 name="ratings"
                 control={control}
-                defaultValue={editData.ratings}
+                defaultValue={productData.ratings}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -309,8 +305,8 @@ function ProductEditPage() {
                 )}
                 rules={{
                   pattern: {
-                    value: /^([\d]{0,6})(\.[\d]{1,2})?$/,
-                    message: "Accept only numbers ! ",
+                    value: /^[1-5]+(\.[1-9])?$/,
+                    message: "Accept only numbers 1-5 ! ",
                   },
                 }}
               />
@@ -320,7 +316,7 @@ function ProductEditPage() {
               <Controller
                 name="popularity"
                 control={control}
-                defaultValue={editData.popularity}
+                defaultValue={productData.popularity}
                 render={({
                   field: { onChange, value },
                   fieldState: { error },
@@ -345,8 +341,8 @@ function ProductEditPage() {
 
             <Grid item xs={12} sm={8} md={8}>
               <Multiselect
-                options={productCategoryOptions}
-                selectedValues={editData.category}
+                options={categoryOptions}
+                selectedValues={productData.category}
                 onSelect={onCatSelect}
                 onRemove={onCatRemove}
                 placeholder="+ Add Category"
@@ -360,7 +356,7 @@ function ProductEditPage() {
               {editorLoaded ? (
                 <CKEditor
                   editor={ClassicEditor}
-                  data={editData.details}
+                  data={productData.details}
                   onReady={(editor) => {
                     editor.editing.view.change((writer) => {
                       writer.setStyle(
@@ -401,7 +397,7 @@ function ProductEditPage() {
         />
       </div>
     </React.Fragment>
-  ) : null;
+  );
 }
 
 ProductEditPage.layout = Admin;
@@ -417,7 +413,13 @@ export async function getServerSideProps(context) {
       },
     };
   }
+
+  const { id } = context.params;
+  const res = await fetch(`${process.env.PUBLIC_URL}/api/product/${id}`);
+  const result = await res.json();
+  const data = result.data;
+
   return {
-    props: {},
+    props: { productData: data },
   };
 }

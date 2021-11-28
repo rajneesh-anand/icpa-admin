@@ -2,9 +2,39 @@ import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 import Adapters from "next-auth/adapters";
 import prisma from "@/libs/prisma";
+import { compare } from "bcrypt";
 
 const options = {
   providers: [
+    Providers.Credentials({
+      async authorize(credentials) {
+        const result = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        //Not found - send error res
+        if (!result) {
+          await prisma.$disconnect();
+          throw new Error("No user found with the email !");
+        }
+        //Check hased password with DB password
+        const checkPassword = await compare(
+          credentials.password,
+          result.password
+        );
+        //Incorrect password - send response
+        if (!checkPassword) {
+          await prisma.$disconnect();
+          throw new Error("Password is wrong !");
+        }
+        //Else send success response
+        await prisma.$disconnect();
+        return { email: result.email };
+      },
+    }),
+
     Providers.Email({
       server: {
         host: process.env.EMAIL_SERVER_HOST,
@@ -36,8 +66,8 @@ const options = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    error: "/auth/error",
-    verifyRequest: "/auth/verify-account",
+    error: "/auth/signin",
+    verifyRequest: "/auth/verify",
     signIn: "/auth/signin",
   },
 };
