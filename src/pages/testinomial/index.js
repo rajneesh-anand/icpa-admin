@@ -69,6 +69,7 @@ function TestinomialPage() {
     formData.append("image", image);
     formData.append("name", data.name);
     formData.append("company", data.company);
+    formData.append("location", data.location);
     formData.append("content", content);
 
     await fetch(`${process.env.API_URL}/testinomial`, {
@@ -170,6 +171,32 @@ function TestinomialPage() {
                   />
                 )}
                 rules={{ required: "Organization Name is required !" }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <Controller
+                name="location"
+                control={control}
+                defaultValue=""
+                render={({
+                  field: { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <TextField
+                    label="CITY - STATE"
+                    variant="outlined"
+                    value={value}
+                    onChange={onChange}
+                    InputProps={{
+                      className: classes.input,
+                    }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={!!error}
+                    helperText={error ? error.message : null}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
