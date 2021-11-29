@@ -44,8 +44,10 @@ function BannerPage({ banner }) {
   });
 
   useEffect(() => {
+    // const res = await fetch(`${process.env.API_URL}/awsupload/fetchObject`);
+    // const result = await res.json();
     setPics(banner);
-  }, []);
+  }, [message]);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -147,24 +149,14 @@ function BannerPage({ banner }) {
           </form>
         </div>
         <Grid container spacing={1} justifyContent="center" alignItems="center">
-          {pics.map(
-            (item, index) =>
-              index > 0 && (
-                <Grid item sm={3} md={3} key={index} align="center">
-                  <Image
-                    src={item.url}
-                    alt={item.url}
-                    width={160}
-                    height={160}
-                  />
-                  <div>
-                    <button onClick={() => removeImage(item.key)}>
-                      Remove
-                    </button>
-                  </div>
-                </Grid>
-              )
-          )}
+          {pics.map((item, index) => (
+            <Grid item sm={3} md={3} key={index} align="center">
+              <Image src={item.url} alt={item.url} width={160} height={160} />
+              <div>
+                <button onClick={() => removeImage(item.key)}>Remove</button>
+              </div>
+            </Grid>
+          ))}
         </Grid>
       </div>
       <ToastMessage

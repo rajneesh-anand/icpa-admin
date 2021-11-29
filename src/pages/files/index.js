@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 function FilePage() {
   const [franchiseFile, setFranchiseFile] = useState();
-  const [faqFile, setFaqFile] = useState();
+  const [planFile, setPlanFile] = useState();
   const [productFile, setProductFile] = useState();
   const [isProcessing, setProcessingTo] = useState(false);
 
@@ -96,16 +96,16 @@ function FilePage() {
     download(JSON.stringify(data), "franchise.json");
   };
 
-  const handleFaqSubmit = async () => {
-    if (!faqFile) {
-      alert("Please select json file with F.A.Q details !");
+  const handlePlanSubmit = async () => {
+    if (!planFile) {
+      alert("Please select json file with membership plan details !");
       return;
     }
     setProcessingTo(true);
     const formData = new FormData();
-    formData.append("uploadedFile", faqFile);
+    formData.append("uploadedFile", planFile);
     try {
-      const res = await fetch(`${process.env.API_URL}/upload/faq`, {
+      const res = await fetch(`${process.env.API_URL}/upload/plan`, {
         method: "POST",
         body: formData,
       });
@@ -116,7 +116,7 @@ function FilePage() {
         setProcessingTo(false);
         setMessage("File saved successfuly !");
         setSuccess(true);
-        setFaqFile(null);
+        setPlanFile(null);
         setOpen(true);
       }
     } catch (error) {
@@ -127,10 +127,10 @@ function FilePage() {
     }
   };
 
-  const handleFaqDownload = async () => {
-    const res = await fetch(`${process.env.API_URL}/upload/faq`);
+  const handlePlanDownload = async () => {
+    const res = await fetch(`${process.env.API_URL}/upload/plan`);
     const data = await res.json();
-    download(JSON.stringify(data), "faq.json");
+    download(JSON.stringify(data), "membership-plan.json");
   };
 
   const handleProductSubmit = async () => {
@@ -216,20 +216,19 @@ function FilePage() {
       <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
         <form>
           <div style={{ display: "flex" }}>
-            <label htmlFor="faq" style={{ color: "black", marginRight: 8 }}>
-              UPLOAD JSON FILE FOR F.A.Q DATA
+            <label htmlFor="plan" style={{ color: "black", marginRight: 8 }}>
+              UPLOAD JSON FILE FOR MEMBERSHIP PLAN DATA
             </label>
             <input
               type="file"
-              id="faq"
-              // value={faqFile}
-              onChange={(e) => setFaqFile(e.target.files[0])}
+              id="plan"
+              onChange={(e) => setPlanFile(e.target.files[0])}
             />
             <Button
               type="button"
               variant="contained"
               color="primary"
-              onClick={handleFaqSubmit}
+              onClick={handlePlanSubmit}
               style={{ marginRight: 8 }}
             >
               {isProcessing ? "Uploading...." : `Upload`}
@@ -238,9 +237,9 @@ function FilePage() {
               type="button"
               variant="contained"
               color="primary"
-              onClick={handleFaqDownload}
+              onClick={handlePlanDownload}
             >
-              Download F.A.Q File
+              Download MEMBERSHIP PLAN File
             </Button>
           </div>
         </form>
