@@ -12,7 +12,6 @@ import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
-import prisma from "@/libs/prisma";
 
 const useStyles = makeStyles((theme) => ({
   root: {
