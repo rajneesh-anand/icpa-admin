@@ -7,7 +7,7 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
-import { slugify } from "../../../libs/helper";
+import { slugify } from "@/libs/helper";
 import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
@@ -116,7 +116,7 @@ function BlogEditPage({ blogData }) {
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} md={12} style={{ margin: "8px 0px" }}>
               <label htmlFor="photo" className={classes.label}>
-                SELECT BLOG THUMBNAIL PHOTO
+                SELECT BLOG THUMBNAIL IMAGE SIZE WxH ( 865 X 645 Px)
               </label>
               <input
                 type="file"

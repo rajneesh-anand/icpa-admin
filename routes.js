@@ -6,6 +6,7 @@ import LocationOn from "@material-ui/icons/LocationOn";
 import Notifications from "@material-ui/icons/Notifications";
 import Unarchive from "@material-ui/icons/Unarchive";
 import Language from "@material-ui/icons/Language";
+import HelpCenterIcon from "@material-ui/icons/HelpOutline";
 
 const Routes = [
   {
@@ -74,6 +75,11 @@ const Routes = [
     path: "/notifications",
     name: "Notifications",
     icon: Notifications,
+  },
+  {
+    path: "/queries",
+    name: "Query",
+    icon: HelpCenterIcon,
   },
 ];
 
