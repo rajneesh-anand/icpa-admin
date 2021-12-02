@@ -12,6 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
+import prisma from "@/libs/prisma";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,9 +32,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function BlogEditPage({ blogData }) {
-  const blog = JSON.parse(blogData);
-  console.log(blog);
+function BlogEditPage({ blog }) {
   const editorRef = useRef();
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [editorLoaded, setEditorLoaded] = useState(false);
@@ -278,18 +277,12 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
   const { id } = context.params;
-  const data = await prisma.post.findFirst({
-    where: {
-      id: Number(id),
-    },
-  });
 
-  console.log(data);
+  const course = await fetch(`${process.env.PUBLIC_URL}/api/blog/${id}`);
+  const courseData = await course.json();
+
   return {
-    props: {
-      blogData: JSON.stringify(data),
-    },
+    props: { blog: courseData.data },
   };
 }
