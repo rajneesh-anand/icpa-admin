@@ -1,26 +1,25 @@
-
-.service-list-area{
-  img{
+.service-list-area {
+  img {
     height: 120px;
     width: 100%;
   }
-  a{
+  a {
     border: 1px solid purple;
     padding: 3px 16px;
     font-size: 13.5px;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     background: purple;
     color: white;
     margin: 8px;
-    &:hover{
+    &:hover {
       background: rgb(92, 6, 92);
       color: white;
     }
   }
-  .MuiCardContent-root{
+  .MuiCardContent-root {
     padding: 0px 6px;
   }
-  .MuiCardActions-root {   
+  .MuiCardActions-root {
     justify-content: flex-end !important;
   }
 }
@@ -303,9 +302,6 @@
   }
 }
 
-
-
-
 .signout {
   padding: 4px 12px;
   background-color: #111111;
@@ -323,12 +319,12 @@
     width: 100%;
   }
 }
-.popover{
+.popover {
   border-radius: 0px !important;
 }
-.popover-header{
+.popover-header {
   font-size: 0.875rem !important;
-  font-family: 'Poppins' !important;
+  font-family: "Poppins" !important;
 }
 .profile-buttons {
   margin-bottom: 0px !important;
@@ -341,15 +337,13 @@
   }
 }
 
-
 .buttonList {
   // border-right: 1px solid #ddd;
   padding: 30px 0px;
   @media #{$xs-device} {
     padding: 30px 16px 8px;
   }
-  @media #{$xxs-device} {   
-  
+  @media #{$xxs-device} {
     padding: 30px 16px 8px;
   }
   .buttonCol {
@@ -373,12 +367,11 @@
   }
 }
 
-
-.ck.ck-reset.ck-editor.ck-rounded-corners{
+.ck.ck-reset.ck-editor.ck-rounded-corners {
   margin-top: 8px;
 }
 
-.ck.ck-toolbar.ck-toolbar_grouping>.ck-toolbar__items {
+.ck.ck-toolbar.ck-toolbar_grouping > .ck-toolbar__items {
   flex-wrap: nowrap !important;
   @media #{$xs-device} {
     flex-wrap: wrap !important;
@@ -387,19 +380,19 @@
     flex-wrap: wrap !important;
   }
 }
-.product-photo{
-border: 1px solid teal;
-    padding: 10px;
-    background: antiquewhite;
-    cursor: pointer;
-    border-radius: 5px;
+.product-photo {
+  border: 1px solid teal;
+  padding: 10px;
+  background: antiquewhite;
+  cursor: pointer;
+  border-radius: 5px;
 }
-.service-list{
+.service-list {
   border: 1px solid #ddd;
   margin: 8px 0px;
   padding: 8px 0px;
-  
-  i{
+
+  i {
     font-size: 24px;
     color: #7952b3;
 
@@ -409,9 +402,8 @@ border: 1px solid teal;
     @media #{$xxs-device} {
       font-size: 18px;
     }
-
   }
-  span{
+  span {
     font-size: 20px;
     color: $black-0e;
     @media #{$xs-device} {
@@ -421,70 +413,67 @@ border: 1px solid teal;
       font-size: 14px;
     }
   }
-  img{
+  img {
     width: 160px;
   }
 }
 
 .text-center-area {
   text-align: center;
-  p{
+  p {
     font-size: 16px;
     text-transform: uppercase;
     font-weight: 500;
-    font-family: 'Roboto';
-    
+    font-family: "Roboto";
   }
-  a{
+  a {
     border: 1px solid purple;
     padding: 6px 8px;
     font-size: 13.5px;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     background: purple;
     color: white;
     margin: 8px;
-    &:hover{
+    &:hover {
       background: rgb(92, 6, 92);
       color: white;
     }
   }
 }
 
-
-.anchorBtn{
+.anchorBtn {
   border: 1px solid purple;
   padding: 4px 12px;
   font-size: 13.5px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   background: purple;
   color: white;
- 
-  &:hover{
+
+  &:hover {
     background: rgb(92, 6, 92);
     color: white;
   }
 }
 
-.new-category{
+.new-category {
   border-bottom: 1px solid #ddd;
-  .MuiGrid-item{
+  .MuiGrid-item {
     margin: 8px 4px;
   }
-  .MuiFormControl-root{
+  .MuiFormControl-root {
     width: 100%;
   }
-  .MuiInputBase-root{
-    input{
+  .MuiInputBase-root {
+    input {
       padding: 10px 14px;
     }
   }
-  .MuiFormLabel-root{
-    color:black
+  .MuiFormLabel-root {
+    color: black;
   }
-
 }
 
-.content-center{
+.content-center {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -492,18 +481,27 @@ border: 1px solid teal;
   flex-direction: column;
   text-align: center;
 }
-.hide-banner{
+.hide-banner {
   display: none;
 }
 
-.default-btn{
+.default-btn {
   padding: 8px 16px;
-    background: purple;
+  background: purple;
+  color: white;
+  font-weight: 400;
+  margin-right: 8px;
+  &:hover {
+    background: rgb(59, 4, 59);
     color: white;
-    font-weight: 400;
-    margin-right: 8px;
-    &:hover{
-      background: rgb(59, 4, 59);
-      color: white;
-    }
+  }
+}
+
+.thumb-image {
+  border: 2px solid teal;
+  padding: 16px 48px;
+  text-align: center;
+}
+.text-center {
+  text-align: center;
 }

@@ -104,7 +104,13 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  const orders = await prisma.orders.findMany({});
+  const orders = await prisma.orders.findMany({
+    orderBy: [
+      {
+        createdAt: "asc",
+      },
+    ],
+  });
 
   return {
     props: {

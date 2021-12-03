@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
   },
   label: {
-    border: "1px solid #ddd",
     padding: 6,
     marginRight: 6,
     color: "black",
@@ -113,16 +112,28 @@ function BlogPage() {
         <form>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} md={12} style={{ margin: "8px 0px" }}>
-              <label htmlFor="photo" className={classes.label}>
-                SELECT BLOG THUMBNAIL IMAGE SIZE WxH ( 865 X 645 Px)
-              </label>
-              <input
-                type="file"
-                id="photo"
-                name="photo"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
+              <div className="thumb-image">
+                <label htmlFor="photo" className={classes.label}>
+                  SELECT BLOG THUMBNAIL IMAGE SIZE WxH ( 865 X 645 Px)
+                </label>
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/*"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
+              {image && (
+                <div className="text-center">
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt="blog-image"
+                    height="240px"
+                    width="240px"
+                  />
+                </div>
+              )}
             </Grid>
 
             <Grid item xs={12} sm={12} md={12}>

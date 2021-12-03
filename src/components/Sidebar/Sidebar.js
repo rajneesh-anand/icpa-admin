@@ -13,7 +13,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
-import AccountCircleOutlined from "@material-ui/icons/AccountCircleOutlined";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 // core components
 import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks.js";
 import styles from "assets/jss/components/sidebarStyle.js";

@@ -77,7 +77,7 @@ function DropzoneComponent(props) {
           <input {...getInputProps()} />
           <div>
             <i className="fas fa-cloud-upload-alt "></i>{" "}
-            <span>Click here to upload image - size (300x400 px)</span>
+            <span>Click here to upload image - size WxH (1200x480 Px)</span>
           </div>
         </div>
       </Grid>

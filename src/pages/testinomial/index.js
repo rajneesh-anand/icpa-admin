@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
   },
   label: {
-    border: "1px solid #ddd",
     padding: 6,
     marginRight: 6,
     color: "black",
@@ -107,16 +106,28 @@ function TestinomialPage() {
         <form>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={12} md={12} style={{ margin: "8px 0px" }}>
-              <label htmlFor="photo" className={classes.label}>
-                SELECT CLIENT PHOTO
-              </label>
-              <input
-                type="file"
-                id="photo"
-                name="photo"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
+              <div className="thumb-image">
+                <label htmlFor="photo" className={classes.label}>
+                  SELECT CLIENT IMAGE SIZE WxH ( 160 X 160 Px)
+                </label>
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/*"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
+              {image && (
+                <div className="text-center">
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt="blog-image"
+                    height="160px"
+                    width="160px"
+                  />
+                </div>
+              )}
             </Grid>
 
             <Grid item xs={12} sm={6} md={6}>

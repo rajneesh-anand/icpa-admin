@@ -148,7 +148,7 @@ const sidebarStyle = (theme) => ({
   itemLink: {
     width: "auto",
     transition: "all 300ms linear",
-    margin: "6px 15px 0",
+    margin: "0px 15px 0",
     borderRadius: "3px",
     position: "relative",
     display: "block",
@@ -160,7 +160,7 @@ const sidebarStyle = (theme) => ({
     width: "24px",
     height: "30px",
     fontSize: "24px",
-    lineHeight: "30px",
+    lineHeight: "26px",
     float: "left",
     marginRight: "15px",
     textAlign: "center",
@@ -175,7 +175,7 @@ const sidebarStyle = (theme) => ({
   itemText: {
     ...defaultFont,
     margin: "0",
-    lineHeight: "30px",
+    lineHeight: "26px",
     fontSize: "14px",
     color: whiteColor,
   },

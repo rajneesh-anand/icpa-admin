@@ -1,13 +1,14 @@
 import Dashboard from "@material-ui/icons/Dashboard";
-import Person from "@material-ui/icons/Person";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import Add from "@material-ui/icons/Add";
 import FilterNone from "@material-ui/icons/FilterNone";
-import LocationOn from "@material-ui/icons/LocationOn";
+import LiveHelpIcon from "@material-ui/icons/LiveHelp";
 import Notifications from "@material-ui/icons/Notifications";
-import Unarchive from "@material-ui/icons/Unarchive";
-import Language from "@material-ui/icons/Language";
+import CategoryIcon from "@material-ui/icons/Category";
+import DescriptionIcon from "@material-ui/icons/Description";
 import HelpCenterIcon from "@material-ui/icons/HelpOutline";
-
+import VideoLibraryIcon from "@material-ui/icons/VideoLibrary";
+import SettingsApplicationsIcon from "@material-ui/icons/SettingsApplications";
 const Routes = [
   {
     path: "/dashboard",
@@ -22,18 +23,18 @@ const Routes = [
   {
     path: "/blogs",
     name: "Blogs & News",
-    icon: FilterNone,
+    icon: DescriptionIcon,
   },
   {
     path: "/category",
     name: "Category",
-    icon: FilterNone,
+    icon: CategoryIcon,
   },
 
   {
     path: "/courses",
     name: "Courses",
-    icon: FilterNone,
+    icon: VideoLibraryIcon,
   },
   {
     path: "/chapters",
@@ -43,12 +44,12 @@ const Routes = [
   {
     path: "/faq-list",
     name: "F.A.Q",
-    icon: FilterNone,
+    icon: LiveHelpIcon,
   },
   {
     path: "/orders",
     name: "Orders",
-    icon: FilterNone,
+    icon: AttachMoneyIcon,
   },
   {
     path: "/products",
@@ -58,7 +59,7 @@ const Routes = [
   {
     path: "/services",
     name: "Services",
-    icon: FilterNone,
+    icon: SettingsApplicationsIcon,
   },
   {
     path: "/testinomials",
