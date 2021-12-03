@@ -64,7 +64,7 @@ function FilePage() {
       alert("Please select json file with franchise details !");
       return;
     }
-    setProcessingTo(true);
+
     const formData = new FormData();
     formData.append("uploadedFile", franchiseFile);
     try {
@@ -76,14 +76,12 @@ function FilePage() {
       if (res.status >= 400 && res.status < 600) {
         throw new Error("Bad response from server");
       } else {
-        setProcessingTo(false);
         setMessage("File saved successfuly !");
         setSuccess(true);
         setFranchiseFile(null);
         setOpen(true);
       }
     } catch (error) {
-      setProcessingTo(false);
       setMessage("Oops something went wrong !");
       setSuccess(false);
       setOpen(true);
@@ -101,7 +99,7 @@ function FilePage() {
       alert("Please select json file with membership plan details !");
       return;
     }
-    setProcessingTo(true);
+
     const formData = new FormData();
     formData.append("uploadedFile", planFile);
     try {
@@ -113,14 +111,12 @@ function FilePage() {
       if (res.status >= 400 && res.status < 600) {
         throw new Error("Bad response from server");
       } else {
-        setProcessingTo(false);
         setMessage("File saved successfuly !");
         setSuccess(true);
         setPlanFile(null);
         setOpen(true);
       }
     } catch (error) {
-      setProcessingTo(false);
       setMessage("Oops something went wrong !");
       setSuccess(false);
       setOpen(true);
@@ -138,7 +134,7 @@ function FilePage() {
       alert("Please select json file with Product Category details !");
       return;
     }
-    setProcessingTo(true);
+
     const formData = new FormData();
     formData.append("uploadedFile", productFile);
     try {
@@ -150,14 +146,12 @@ function FilePage() {
       if (res.status >= 400 && res.status < 600) {
         throw new Error("Bad response from server");
       } else {
-        setProcessingTo(false);
         setMessage("File saved successfuly !");
         setSuccess(true);
         setProductFile(null);
         setOpen(true);
       }
     } catch (error) {
-      setProcessingTo(false);
       setMessage("Oops something went wrong !");
       setSuccess(false);
       setOpen(true);
@@ -200,7 +194,7 @@ function FilePage() {
               onClick={handleFranchiseSubmit}
               style={{ marginRight: 8 }}
             >
-              {isProcessing ? "Uploading...." : `Upload`}
+              Upload Franchise File
             </Button>
             <Button
               type="button"
@@ -231,7 +225,7 @@ function FilePage() {
               onClick={handlePlanSubmit}
               style={{ marginRight: 8 }}
             >
-              {isProcessing ? "Uploading...." : `Upload`}
+              Upload Membership File
             </Button>
             <Button
               type="button"
@@ -266,7 +260,7 @@ function FilePage() {
               onClick={handleProductSubmit}
               style={{ marginRight: 8 }}
             >
-              {isProcessing ? "Uploading...." : `Upload`}
+              Upload Product Category File
             </Button>
             <Button
               type="button"
