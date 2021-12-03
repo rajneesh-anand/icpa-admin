@@ -64,7 +64,7 @@ function CourseListPage({ data }) {
                       <TableCell align="left">{index + 1}</TableCell>
                       <TableCell align="left">
                         <img
-                          src={item.images ? item.images : "/img/profile.png"}
+                          src={item.image ? item.image : "/img/profile.png"}
                           alt={item.courseName}
                           height={64}
                           width={64}
