@@ -87,7 +87,7 @@ function BlogPage() {
           throw new Error("Bad response from server");
         } else {
           setProcessingTo(false);
-          setMessage("News Post saved successfuly !");
+          setMessage("Blog saved successfuly !");
           setSuccess(true);
           setOpen(true);
           setContent("");

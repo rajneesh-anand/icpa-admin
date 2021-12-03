@@ -1,4 +1,4 @@
-import prisma from "../../../libs/prisma";
+import prisma from "@libs/prisma";
 
 export default async function handler(req, res) {
   const curPage = req.query.page || 1;

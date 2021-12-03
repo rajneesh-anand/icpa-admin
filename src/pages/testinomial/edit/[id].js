@@ -8,7 +8,6 @@ import Grid from "@material-ui/core/Grid";
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
-import prisma from "@/libs/prisma";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -261,18 +260,14 @@ export async function getServerSideProps(context) {
       },
     };
   }
-
   const { id } = context.params;
-  const data = await prisma.testinomials.findFirst({
-    where: {
-      id: Number(id),
-    },
-  });
 
-  console.log(data);
+  const response = await fetch(
+    `${process.env.PUBLIC_URL}/api/testinomial/${id}`
+  );
+  const result = await response.json();
+
   return {
-    props: {
-      testinomials: data,
-    },
+    props: { testinomials: result ? result.data : null },
   };
 }

@@ -87,7 +87,7 @@ function BlogEditPage({ blog }) {
           throw new Error("Bad response from server");
         } else {
           setProcessingTo(false);
-          setMessage("Testinomial saved successfuly !");
+          setMessage("Blog updated successfuly !");
           setSuccess(true);
           setOpen(true);
           setContent("");

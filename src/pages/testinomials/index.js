@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Admin from "@/layouts/Admin";
 import { getSession } from "next-auth/client";
 import Seo from "@/components/Seo";
-import prisma from "@/libs/prisma";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -27,9 +27,8 @@ const useStyles = makeStyles({
   },
 });
 
-function TestinomialListPage({ testinomials }) {
+function TestinomialListPage({ data }) {
   const classes = useStyles();
-  const data = testinomials ? JSON.parse(testinomials) : null;
 
   return (
     <>
@@ -112,18 +111,12 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
-
-  const data = await prisma.testinomials.findMany({
-    orderBy: [
-      {
-        id: "asc",
-      },
-    ],
-  });
+  const response = await fetch(`${process.env.PUBLIC_URL}/api/testinomials`);
+  const result = await response.json();
 
   return {
     props: {
-      testinomials: data.length != 0 ? JSON.stringify(data) : null,
+      data: result ? result.data : null,
     },
   };
 };
