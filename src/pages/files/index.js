@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import { slugify } from "@/libs/helper";
+
 import { useForm, Controller } from "react-hook-form";
 import { getSession } from "next-auth/client";
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
+
 import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
+
 import ToastMessage from "@/components/Snackbar/Snackbar";
 import Seo from "@/components/Seo";
 import Admin from "@/layouts/Admin";
@@ -37,6 +34,7 @@ function FilePage() {
   const [franchiseFile, setFranchiseFile] = useState();
   const [planFile, setPlanFile] = useState();
   const [productFile, setProductFile] = useState();
+  const [aboutFile, setAboutFile] = useState();
   const [isProcessing, setProcessingTo] = useState(false);
 
   const [message, setMessage] = useState();
@@ -164,6 +162,41 @@ function FilePage() {
     download(JSON.stringify(data), "product-category.json");
   };
 
+  const handleAboutSubmit = async () => {
+    if (!aboutFile) {
+      alert("Please select json file with About Us details !");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("uploadedFile", aboutFile);
+    try {
+      const res = await fetch(`${process.env.API_URL}/upload/about`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.status >= 400 && res.status < 600) {
+        throw new Error("Bad response from server");
+      } else {
+        setMessage("File saved successfuly !");
+        setSuccess(true);
+        setProductFile(null);
+        setOpen(true);
+      }
+    } catch (error) {
+      setMessage("Oops something went wrong !");
+      setSuccess(false);
+      setOpen(true);
+    }
+  };
+
+  const handleAboutDownload = async () => {
+    const res = await fetch(`${process.env.API_URL}/upload/about`);
+    const data = await res.json();
+    download(JSON.stringify(data), "about.json");
+  };
+
   return (
     <>
       <Seo
@@ -269,6 +302,38 @@ function FilePage() {
               onClick={handleProductDownload}
             >
               Download Product Category File
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
+        <form>
+          <div style={{ display: "flex" }}>
+            <label htmlFor="plan" style={{ color: "black", marginRight: 8 }}>
+              UPLOAD JSON FILE FOR ABOUT US DETAILS
+            </label>
+            <input
+              type="file"
+              id="plan"
+              onChange={(e) => setAboutFile(e.target.files[0])}
+            />
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              onClick={handleAboutSubmit}
+              style={{ marginRight: 8 }}
+            >
+              Upload About-us Details file
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              onClick={handleAboutDownload}
+            >
+              Download About-us Details file
             </Button>
           </div>
         </form>
