@@ -205,7 +205,7 @@ function FilePage() {
         canonical={`${process.env.PUBLIC_URL}/files`}
       />
 
-      <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
+      <div className="upload-file-area">
         <form>
           <div style={{ display: "flex" }}>
             <label
@@ -240,7 +240,7 @@ function FilePage() {
           </div>
         </form>
       </div>
-      <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
+      <div className="upload-file-area">
         <form>
           <div style={{ display: "flex" }}>
             <label htmlFor="plan" style={{ color: "black", marginRight: 8 }}>
@@ -271,7 +271,7 @@ function FilePage() {
           </div>
         </form>
       </div>
-      <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
+      <div className="upload-file-area">
         <form>
           <div style={{ display: "flex" }}>
             <label
@@ -307,7 +307,7 @@ function FilePage() {
         </form>
       </div>
 
-      <div style={{ marginTop: 16, border: "1px solid #ddd", padding: "8px" }}>
+      <div className="upload-file-area">
         <form>
           <div style={{ display: "flex" }}>
             <label htmlFor="plan" style={{ color: "black", marginRight: 8 }}>

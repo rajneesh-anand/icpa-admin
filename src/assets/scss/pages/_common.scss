@@ -505,3 +505,14 @@
 .text-center {
   text-align: center;
 }
+
+.upload-file-area {
+  margin-top: 16px;
+  border: 1px solid #ddd;
+  padding: 8px;
+  .MuiButton-containedPrimary {
+    color: #fff;
+    background-color: #3f51b5;
+    font-size: 11px;
+  }
+}
